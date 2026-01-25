@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { SliderManagement } from '@/components/dashboard/homepage/SliderManagement'
+import { SectionManagement } from '@/components/dashboard/homepage/SectionManagement'
 
 export const metadata: Metadata = {
   title: 'Startseite - Dashboard',
@@ -27,11 +28,7 @@ export default function HomepagePage() {
         </TabsContent>
 
         <TabsContent value="sections" className="mt-6">
-          <div className="rounded-xl bg-light-grey p-8 text-center">
-            <p className="text-text-color/60">
-              Abschnitte werden in Phase 08 implementiert.
-            </p>
-          </div>
+          <SectionManagement />
         </TabsContent>
       </Tabs>
     </div>
