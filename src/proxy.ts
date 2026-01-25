@@ -7,7 +7,7 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const isAuthPage = pathname.startsWith('/anmelden') || pathname.startsWith('/passwort')
-  const isDashboard = pathname.startsWith('/dashboard')
+  const isDashboard = pathname === '/' || pathname.startsWith('/dashboard')
   const isApi = pathname.startsWith('/api')
 
   // Allow public API routes (e.g., content fetch)
@@ -40,6 +40,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/anmelden',
     '/passwort-vergessen',
