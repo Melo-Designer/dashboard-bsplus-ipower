@@ -15,6 +15,7 @@ import {
   Layers,
   ChevronLeft,
   ChevronRight,
+  Home,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -25,15 +26,16 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Seiten', href: '/dashboard/seiten', icon: FileText },
-  { label: 'Sektionen', href: '/dashboard/sektionen', icon: Layers },
-  { label: 'Blog', href: '/dashboard/blog', icon: Newspaper },
-  { label: 'Medien', href: '/dashboard/medien', icon: Image },
-  { label: 'Stellenangebote', href: '/dashboard/stellenangebote', icon: Briefcase },
-  { label: 'Bewerbungen', href: '/dashboard/bewerbungen', icon: Users },
-  { label: 'Nachrichten', href: '/dashboard/nachrichten', icon: MessageSquare },
-  { label: 'Einstellungen', href: '/dashboard/einstellungen', icon: Settings },
+  { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Startseite', href: '/startseite', icon: Home },
+  { label: 'Seiten', href: '/seiten', icon: FileText },
+  { label: 'Sektionen', href: '/sektionen', icon: Layers },
+  { label: 'Blog', href: '/blog', icon: Newspaper },
+  { label: 'Medien', href: '/medien', icon: Image },
+  { label: 'Stellenangebote', href: '/stellenangebote', icon: Briefcase },
+  { label: 'Bewerbungen', href: '/bewerbungen', icon: Users },
+  { label: 'Nachrichten', href: '/nachrichten', icon: MessageSquare },
+  { label: 'Einstellungen', href: '/einstellungen', icon: Settings },
 ]
 
 export function Sidebar() {
@@ -70,7 +72,7 @@ export function Sidebar() {
       <nav className="flex-1 px-2 py-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href))
+            (item.href !== '/' && pathname.startsWith(item.href))
 
           return (
             <Link

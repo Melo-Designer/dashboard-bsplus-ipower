@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'dashboard.ipower.de',
       },
+      {
+        protocol: 'https',
+        hostname: 'bs-plus-back.melodesigner.dev',
+      },
+      {
+        protocol: 'https',
+        hostname: 'admin.ipower.de',
+      },
     ],
   },
   async headers() {
