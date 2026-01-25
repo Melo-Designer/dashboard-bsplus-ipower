@@ -8,6 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 export function getImageUrl(path: string | null | undefined): string {
   if (!path) return '/placeholder.jpg'
   if (path.startsWith('http')) return path
+  // Local uploads from public folder - use relative path
+  if (path.startsWith('/uploads')) return path
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || ''
   return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`
 }
