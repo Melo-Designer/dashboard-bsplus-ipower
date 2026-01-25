@@ -12,12 +12,39 @@ interface LoginFormProps {
   callbackUrl?: string
 }
 
+const isDev = process.env.NODE_ENV === 'development'
+
 export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(initialError)
   const [isLoading, setIsLoading] = useState(false)
+
+  const handleQuickLogin = async () => {
+    setIsLoading(true)
+    setError(undefined)
+
+    try {
+      const result = await signIn('credentials', {
+        email: 'admin@example.com',
+        password: 'change-this-password',
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError('Quick login fehlgeschlagen')
+        setIsLoading(false)
+        return
+      }
+
+      router.push(callbackUrl || '/dashboard')
+      router.refresh()
+    } catch {
+      setError('Ein Fehler ist aufgetreten')
+      setIsLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +114,17 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
       >
         {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
       </Button>
+
+      {isDev && (
+        <button
+          type="button"
+          onClick={handleQuickLogin}
+          disabled={isLoading}
+          className="w-full text-sm text-secondary underline hover:text-primary transition-colors"
+        >
+          Quick Login (Dev)
+        </button>
+      )}
 
       <div className="text-center">
         <a
