@@ -1,0 +1,459 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum Website {
+  bs_plus
+  ipower
+}
+
+enum SectionType {
+  hero           // SectionModel - hero with background
+  triple         // SectionTriple - 3 columns
+  text_image     // SectionTextImage - text + image
+  black_cta      // SectionBlack - dark CTA section
+  numbers        // SectionNumbers - statistics
+  accordion      // SectionModel with accordion cards
+}
+
+enum JobStatus {
+  draft
+  published
+  archived
+}
+
+enum ApplicationStatus {
+  new
+  reviewing
+  interviewed
+  accepted
+  rejected
+}
+
+// ============================================
+// AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  image         String?
+
+  // Password reset
+  resetToken         String?   @unique
+  resetTokenExpiry   DateTime?
+
+  // Relations
+  media         Media[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([email])
+}
+
+// ============================================
+// MEDIA
+// ============================================
+
+model Media {
+  id            String    @id @default(cuid())
+  url           String
+  filename      String
+  originalName  String
+  mimeType      String
+  size          Int
+  width         Int?
+  height        Int?
+
+  altText       String?
+  caption       String?
+  description   String?
+  category      String?
+
+  uploadedById  String?
+  uploadedBy    User?     @relation(fields: [uploadedById], references: [id])
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([category])
+  @@index([createdAt])
+  @@index([mimeType])
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+
+model Setting {
+  id        String   @id @default(cuid())
+  website   Website
+  key       String
+  value     String   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([website, key])
+  @@index([website])
+}
+
+// ============================================
+// HOMEPAGE
+// ============================================
+
+model Slide {
+  id          String   @id @default(cuid())
+  website     Website
+
+  title       String?
+  subtitle    String?
+  imageUrl    String
+  linkUrl     String?
+  linkText    String?
+
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([website, active])
+  @@index([sortOrder])
+}
+
+model HomepageSection {
+  id          String   @id @default(cuid())
+  website     Website
+
+  // Section identification
+  identifier  String   // e.g., "ueber-uns", "bhkw-service"
+
+  // Content
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+
+  // Styling
+  backgroundImage String?
+  backgroundColor String?  // "primary", "secondary", "light", "dark"
+  textColor       String?  // "light", "dark"
+
+  // Accordion cards (JSON array)
+  // [{title, content, linkUrl, linkText, btnClass}]
+  cards       String?  @db.Text
+
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, identifier])
+  @@index([website, active])
+  @@index([sortOrder])
+}
+
+// ============================================
+// DYNAMIC PAGES
+// ============================================
+
+model Page {
+  id          String   @id @default(cuid())
+  website     Website
+
+  slug        String
+  title       String
+  metaTitle   String?
+  metaDescription String? @db.Text
+
+  // Hero section
+  heroTitle       String?
+  heroSubtitle    String?
+  heroDescription String?  @db.Text
+  heroImage       String?
+  heroButtonText  String?
+  heroButtonLink  String?
+
+  active      Boolean  @default(true)
+
+  // Relations
+  sections    PageSection[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, slug])
+  @@index([website, active])
+}
+
+model PageSection {
+  id          String      @id @default(cuid())
+  pageId      String
+  page        Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  type        SectionType
+
+  // Common fields
+  title       String?
+  subtitle    String?
+  content     String?     @db.Text
+
+  // For text_image sections
+  imageUrl    String?
+  imageAlt    String?
+  imageAlign  String?     // "left" or "right"
+
+  // For triple sections (JSON array)
+  // [{title, content}]
+  items       String?     @db.Text
+
+  // For black_cta sections (JSON array)
+  // [{text, type, link, btnClass}]
+  buttons     String?     @db.Text
+
+  // For accordion sections (JSON array)
+  // [{title, content, linkUrl, linkText, btnClass}]
+  cards       String?     @db.Text
+
+  // For numbers sections (JSON array)
+  // [{value, label, suffix}]
+  stats       String?     @db.Text
+
+  // Styling
+  backgroundImage String?
+  backgroundColor String?
+  textColor       String?
+
+  sortOrder   Int         @default(0)
+  active      Boolean     @default(true)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([pageId])
+  @@index([sortOrder])
+}
+
+// ============================================
+// BLOG
+// ============================================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  website     Website
+
+  slug        String
+  title       String
+  excerpt     String?  @db.Text
+  content     String   @db.Text
+
+  featuredImage String?
+  author        String?
+
+  categoryId  String?
+  category    BlogCategory? @relation(fields: [categoryId], references: [id])
+
+  tags        Tag[]
+
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String? @db.Text
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, slug])
+  @@index([website, published])
+  @@index([publishedAt])
+  @@index([categoryId])
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  website     Website
+
+  name        String
+  slug        String
+  description String?
+
+  posts       BlogPost[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, slug])
+  @@index([website])
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+
+  posts       BlogPost[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============================================
+// CAREER
+// ============================================
+
+model JobListing {
+  id          String    @id @default(cuid())
+  website     Website
+
+  slug        String
+  title       String
+  company     String?   // Internal company/department
+
+  description     String   @db.Text
+  requirements    String?  @db.Text  // JSON array
+  benefits        String?  @db.Text  // JSON array
+  responsibilities String? @db.Text  // JSON array
+
+  employmentType  String?  // "Vollzeit", "Teilzeit", "Ausbildung", etc.
+  location        String?
+  salary          String?
+
+  featuredImage   String?
+  contactEmail    String?
+
+  status          JobStatus @default(draft)
+  publishedAt     DateTime?
+  applicationDeadline DateTime?
+
+  // Relations
+  applications    JobApplication[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([website, slug])
+  @@index([website, status])
+  @@index([publishedAt])
+}
+
+model JobApplication {
+  id            String   @id @default(cuid())
+
+  jobId         String
+  job           JobListing @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  firstName     String
+  lastName      String
+  email         String
+  phone         String?
+
+  coverMessage  String?  @db.Text
+
+  // File uploads
+  cvUrl             String?
+  cvOriginalName    String?
+  coverLetterUrl    String?
+  coverLetterOriginalName String?
+  certificatesJson  String? @db.Text  // JSON array of {url, name}
+
+  status        ApplicationStatus @default(new)
+  notes         String?  @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([jobId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================
+// PAGE HEADERS
+// ============================================
+
+model PageHeader {
+  id          String   @id @default(cuid())
+  website     Website
+
+  pageSlug    String   // e.g., "kontakt", "ueber-uns", "karriere"
+
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+
+  backgroundImage String?
+  overlayColor    String?
+  textColor       String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, pageSlug])
+  @@index([website])
+}
+
+// ============================================
+// LEGAL PAGES
+// ============================================
+
+model LegalPage {
+  id          String   @id @default(cuid())
+  website     Website
+
+  type        String   // "impressum", "datenschutz", "barrierefreiheit"
+
+  title       String
+  content     String   @db.Text
+
+  lastUpdated DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([website, type])
+  @@index([website])
+}
+
+// ============================================
+// CONTACT MESSAGES
+// ============================================
+
+model ContactMessage {
+  id          String   @id @default(cuid())
+  website     Website
+
+  name        String
+  email       String
+  phone       String?
+  subject     String?
+  message     String   @db.Text
+  company     String?
+
+  // For job-specific inquiries
+  jobListingId String?
+
+  read        Boolean  @default(false)
+  archived    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([website, read])
+  @@index([website, archived])
+  @@index([createdAt])
+}
