@@ -19,9 +19,7 @@ import {
 } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import {
-  Upload,
   Search,
-  Filter,
   X,
   CheckCircle,
   Image as ImageIcon,
@@ -186,7 +184,6 @@ export function MediaSelectorModal({
               variant="secondary"
               onClick={() => setShowUploadModal(true)}
             >
-              <Upload className="h-4 w-4 mr-2" />
               Neue Datei hochladen
             </Button>
 
@@ -212,7 +209,6 @@ export function MediaSelectorModal({
 
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="w-44">
-                  <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Filter" />
                 </SelectTrigger>
                 <SelectContent>
@@ -346,7 +342,6 @@ export function MediaSelectorModal({
                   onClick={handleConfirmSelection}
                   disabled={selectedMedia.length === 0}
                 >
-                  <CheckCircle className="h-4 w-4 mr-2" />
                   {selectButtonLabel}
                 </Button>
               </div>

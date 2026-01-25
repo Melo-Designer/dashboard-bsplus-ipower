@@ -31,14 +31,10 @@ import {
 } from '@/components/ui/AlertDialog'
 import { MediaUploadModal } from '@/components/dashboard/media/MediaUploadModal'
 import {
-  Upload,
   Search,
-  Filter,
   X,
-  Trash2,
   Copy,
   ExternalLink,
-  CheckCircle,
   Image as ImageIcon,
   Grid,
   List,
@@ -148,7 +144,6 @@ export default function MediaPage() {
           </p>
         </div>
         <Button variant="secondary" onClick={() => setShowUploadModal(true)}>
-          <Upload className="h-4 w-4 mr-2" />
           Datei hochladen
         </Button>
       </div>
@@ -176,7 +171,6 @@ export default function MediaPage() {
 
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="w-44">
-            <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
@@ -451,7 +445,6 @@ export default function MediaPage() {
               onClick={() => setShowDeleteDialog(true)}
               className="bg-primary"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
               Löschen
             </Button>
             <Button

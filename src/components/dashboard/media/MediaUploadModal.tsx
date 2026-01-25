@@ -591,19 +591,11 @@ export function MediaUploadModal({
                   onClick={handleUploadAll}
                   disabled={pendingCount === 0 || isProcessing}
                 >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Wird verarbeitet...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      {pendingCount === 1
-                        ? 'Hochladen'
-                        : `${pendingCount} Dateien hochladen`}
-                    </>
-                  )}
+                  {isProcessing
+                    ? 'Wird verarbeitet...'
+                    : pendingCount === 1
+                      ? 'Hochladen'
+                      : `${pendingCount} Dateien hochladen`}
                 </Button>
               </>
             )}
