@@ -4,13 +4,6 @@ import { useState, useEffect } from 'react'
 import { useWebsite } from '@/components/dashboard/WebsiteSelector'
 import { Button } from '@/components/ui/Button'
 import { Switch } from '@/components/ui/Switch'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select'
 import { SlideEditor } from './SlideEditor'
 import { toast } from 'sonner'
 import Image from 'next/image'
@@ -35,7 +28,7 @@ import type { Slide } from '@/types'
 import { Skeleton } from '@/components/ui/Skeleton'
 
 export function SliderManagement() {
-  const { website, setWebsite, isLoaded } = useWebsite()
+  const { website, isLoaded } = useWebsite()
   const [slides, setSlides] = useState<Slide[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [editingSlide, setEditingSlide] = useState<Slide | null>(null)
@@ -139,20 +132,9 @@ export function SliderManagement() {
         <p className="text-sm text-text-color/60">
           Ziehen Sie Slides um die Reihenfolge zu ändern
         </p>
-        <div className="flex gap-3">
-          <Select value={website} onValueChange={(v) => setWebsite(v as 'bs_plus' | 'ipower')}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="bs_plus">BS Plus</SelectItem>
-              <SelectItem value="ipower">iPower</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="secondary" onClick={() => setIsCreating(true)}>
-            Neuer Slide
-          </Button>
-        </div>
+        <Button variant="secondary" onClick={() => setIsCreating(true)}>
+          Neuer Slide
+        </Button>
       </div>
 
       {slides.length === 0 ? (

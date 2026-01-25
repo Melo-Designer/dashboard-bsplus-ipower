@@ -6,19 +6,12 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { toast } from 'sonner'
 import { SETTING_GROUPS, SettingDefinition } from '@/lib/constants/settings'
 
 export default function SettingsPage() {
-  const { website, setWebsite, getDisplayName, isLoaded } = useWebsite()
+  const { website, getDisplayName, isLoaded } = useWebsite()
   const [settings, setSettings] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -73,10 +66,7 @@ export default function SettingsPage() {
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-64 mt-2" />
           </div>
-          <div className="flex gap-3">
-            <Skeleton className="h-10 w-32" />
-            <Skeleton className="h-10 w-32" />
-          </div>
+          <Skeleton className="h-10 w-32" />
         </div>
         {[1, 2, 3].map((i) => (
           <Skeleton key={i} className="h-48 rounded-xl" />
@@ -95,20 +85,9 @@ export default function SettingsPage() {
             Konfigurieren Sie die Einstellungen für {getDisplayName()}
           </p>
         </div>
-        <div className="flex gap-3">
-          <Select value={website} onValueChange={(v) => setWebsite(v as 'bs_plus' | 'ipower')}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="bs_plus">BS Plus</SelectItem>
-              <SelectItem value="ipower">iPower</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="secondary" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? 'Wird gespeichert...' : 'Speichern'}
-          </Button>
-        </div>
+        <Button variant="secondary" onClick={handleSave} disabled={isSaving}>
+          {isSaving ? 'Wird gespeichert...' : 'Speichern'}
+        </Button>
       </div>
 
       {/* Settings Groups */}

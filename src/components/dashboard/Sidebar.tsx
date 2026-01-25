@@ -16,8 +16,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
+  ChevronDown,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { useWebsite } from './WebsiteSelector'
 
 interface NavItem {
   label: string
@@ -41,6 +43,20 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const { website, setWebsite, isLoaded, getDisplayName } = useWebsite()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <aside
@@ -53,7 +69,6 @@ export function Sidebar() {
         {!isCollapsed && (
           <div>
             <h1 className="font-highlight text-lg font-bold text-white">Dashboard</h1>
-            <p className="text-xs text-secondary-200">BS Plus & iPower</p>
           </div>
         )}
         <button
@@ -69,7 +84,90 @@ export function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 px-2 py-4 space-y-1">
+      {/* Website Selector */}
+      <div className="px-2 pb-4" ref={dropdownRef}>
+        {isLoaded ? (
+          <div className="relative">
+            <button
+              onClick={() => !isCollapsed && setIsDropdownOpen(!isDropdownOpen)}
+              className={cn(
+                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
+                website === 'bs_plus'
+                  ? 'bg-primary/20 text-white'
+                  : 'bg-ipower-primary/20 text-white',
+                !isCollapsed && 'hover:bg-secondary-400'
+              )}
+              title={isCollapsed ? getDisplayName() : undefined}
+            >
+              <div
+                className={cn(
+                  'h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0',
+                  website === 'bs_plus' ? 'bg-primary' : 'bg-ipower-primary'
+                )}
+              >
+                {website === 'bs_plus' ? 'BS' : 'iP'}
+              </div>
+              {!isCollapsed && (
+                <>
+                  <span className="text-sm font-medium flex-1 text-left">
+                    {getDisplayName()}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      'h-4 w-4 transition-transform',
+                      isDropdownOpen && 'rotate-180'
+                    )}
+                  />
+                </>
+              )}
+            </button>
+
+            {/* Dropdown */}
+            {isDropdownOpen && !isCollapsed && (
+              <div className="absolute left-0 right-0 mt-1 bg-secondary-400 rounded-lg overflow-hidden z-50 shadow-lg">
+                <button
+                  onClick={() => {
+                    setWebsite('bs_plus')
+                    setIsDropdownOpen(false)
+                  }}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 transition-colors',
+                    website === 'bs_plus'
+                      ? 'bg-primary text-white'
+                      : 'text-secondary-100 hover:bg-secondary-300'
+                  )}
+                >
+                  <div className="h-6 w-6 rounded bg-primary flex items-center justify-center text-xs font-bold">
+                    BS
+                  </div>
+                  <span className="text-sm">BS Plus</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setWebsite('ipower')
+                    setIsDropdownOpen(false)
+                  }}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 transition-colors',
+                    website === 'ipower'
+                      ? 'bg-ipower-primary text-white'
+                      : 'text-secondary-100 hover:bg-secondary-300'
+                  )}
+                >
+                  <div className="h-6 w-6 rounded bg-ipower-primary flex items-center justify-center text-xs font-bold">
+                    iP
+                  </div>
+                  <span className="text-sm">iPower</span>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="h-12 rounded-lg bg-secondary-400 animate-pulse" />
+        )}
+      </div>
+
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href))
