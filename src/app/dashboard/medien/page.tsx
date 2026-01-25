@@ -418,7 +418,7 @@ export default function MediaPage() {
 
               {/* URL */}
               <div className="flex items-center gap-2 p-3 rounded-xl bg-light-grey text-sm">
-                <code className="flex-1 truncate text-text-color/70">{selectedMedia.url}</code>
+                <code className="flex-1 truncate text-text-color/70">{`${window.location.origin}${selectedMedia.url}`}</code>
                 <button
                   onClick={() => handleCopyUrl(selectedMedia.url)}
                   className="p-1.5 rounded-lg hover:bg-white transition-colors"
