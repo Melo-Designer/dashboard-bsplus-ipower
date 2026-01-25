@@ -8,8 +8,16 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
+        protocol: 'http',
         hostname: 'localhost',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dashboard.bsplus-service.de',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dashboard.ipower.de',
       },
     ],
   },
