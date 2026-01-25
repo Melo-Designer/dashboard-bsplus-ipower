@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useWebsite } from '@/hooks/use-website'
+import { useWebsite } from '@/components/dashboard/WebsiteSelector'
 import { Button } from '@/components/ui/Button'
 import { Switch } from '@/components/ui/Switch'
 import {

@@ -1,13 +1,19 @@
 'use client'
 
-import { useState, createContext, useContext } from 'react'
+import { useState, useEffect, createContext, useContext, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 
-type Website = 'bs_plus' | 'ipower'
+export type Website = 'bs_plus' | 'ipower'
+
+const STORAGE_KEY = 'dashboard-selected-website'
 
 interface WebsiteContextType {
   website: Website
   setWebsite: (website: Website) => void
+  isLoaded: boolean
+  getDisplayName: (site?: Website) => string
+  isBsPlus: boolean
+  isIpower: boolean
 }
 
 const WebsiteContext = createContext<WebsiteContextType | undefined>(undefined)
@@ -21,17 +27,56 @@ export function useWebsite() {
 }
 
 export function WebsiteProvider({ children }: { children: React.ReactNode }) {
-  const [website, setWebsite] = useState<Website>('bs_plus')
+  const [website, setWebsiteState] = useState<Website>('bs_plus')
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored === 'bs_plus' || stored === 'ipower') {
+      setWebsiteState(stored)
+    }
+    setIsLoaded(true)
+  }, [])
+
+  // Save to localStorage when changed
+  const setWebsite = useCallback((newWebsite: Website) => {
+    setWebsiteState(newWebsite)
+    localStorage.setItem(STORAGE_KEY, newWebsite)
+  }, [])
+
+  // Get display name
+  const getDisplayName = useCallback((site?: Website): string => {
+    const target = site || website
+    return target === 'bs_plus' ? 'BS Plus' : 'iPower'
+  }, [website])
 
   return (
-    <WebsiteContext.Provider value={{ website, setWebsite }}>
+    <WebsiteContext.Provider value={{
+      website,
+      setWebsite,
+      isLoaded,
+      getDisplayName,
+      isBsPlus: website === 'bs_plus',
+      isIpower: website === 'ipower',
+    }}>
       {children}
     </WebsiteContext.Provider>
   )
 }
 
 export function WebsiteSelector() {
-  const { website, setWebsite } = useWebsite()
+  const { website, setWebsite, isLoaded } = useWebsite()
+
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center gap-1 p-1 bg-light-grey rounded-lg">
+        <div className="px-4 py-1.5 rounded-md text-sm font-medium text-muted-foreground">
+          Laden...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex items-center gap-1 p-1 bg-light-grey rounded-lg">
