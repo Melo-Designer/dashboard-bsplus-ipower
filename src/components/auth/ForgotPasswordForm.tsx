@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Loader2, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
 import Link from 'next/link'
 
 export function ForgotPasswordForm() {
@@ -40,18 +39,17 @@ export function ForgotPasswordForm() {
   if (isSuccess) {
     return (
       <div className="text-center space-y-4">
-        <div className="flex justify-center">
-          <CheckCircle className="h-12 w-12 text-success" />
+        <div className="bg-success text-success-text font-bold text-center p-2.5 rounded-15">
+          E-Mail gesendet
         </div>
-        <p className="text-muted-foreground">
+        <p className="text-text-color">
           Falls ein Konto mit dieser E-Mail existiert, erhalten Sie in Kürze
           eine E-Mail mit weiteren Anweisungen.
         </p>
         <Link
           href="/anmelden"
-          className="inline-flex items-center text-primary hover:opacity-80 transition-opacity"
+          className="inline-block text-secondary underline hover:text-primary transition-colors"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
           Zurück zur Anmeldung
         </Link>
       </div>
@@ -59,15 +57,14 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="bg-primary-50 text-primary-700 px-4 py-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span className="text-sm">{error}</span>
+        <div className="bg-primary text-white font-bold text-center p-2.5 rounded-15">
+          {error}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div>
         <Label htmlFor="email">E-Mail</Label>
         <Input
           id="email"
@@ -81,27 +78,19 @@ export function ForgotPasswordForm() {
       </div>
 
       <Button
-        type="submit"
-        className="w-full"
-        size="lg"
+        variant="secondary"
+        buttonType="submit"
         disabled={isLoading}
+        className="w-full"
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Wird gesendet...
-          </>
-        ) : (
-          'Link senden'
-        )}
+        {isLoading ? 'Wird gesendet...' : 'Link senden'}
       </Button>
 
       <div className="text-center">
         <Link
           href="/anmelden"
-          className="inline-flex items-center text-sm text-secondary hover:text-primary transition-colors"
+          className="text-sm text-secondary underline hover:text-primary transition-colors"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
           Zurück zur Anmeldung
         </Link>
       </div>

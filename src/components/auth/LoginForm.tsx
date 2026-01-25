@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Loader2, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Label } from '@/components/ui/Label'
 
 interface LoginFormProps {
   error?: string
@@ -47,15 +46,14 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="bg-primary-50 text-primary-700 px-4 py-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          <span className="text-sm">{error}</span>
+        <div className="bg-primary text-white font-bold text-center p-2.5 rounded-15">
+          {error}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div>
         <Label htmlFor="email">E-Mail</Label>
         <Input
           id="email"
@@ -68,7 +66,7 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
         />
       </div>
 
-      <div className="space-y-2">
+      <div>
         <Label htmlFor="password">Passwort</Label>
         <Input
           id="password"
@@ -82,25 +80,18 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
       </div>
 
       <Button
-        type="submit"
-        className="w-full"
-        size="lg"
+        variant="secondary"
+        buttonType="submit"
         disabled={isLoading}
+        className="w-full"
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Wird angemeldet...
-          </>
-        ) : (
-          'Anmelden'
-        )}
+        {isLoading ? 'Wird angemeldet...' : 'Anmelden'}
       </Button>
 
       <div className="text-center">
         <a
           href="/passwort-vergessen"
-          className="text-sm text-secondary hover:text-primary transition-colors"
+          className="text-sm text-secondary underline hover:text-primary transition-colors"
         >
           Passwort vergessen?
         </a>

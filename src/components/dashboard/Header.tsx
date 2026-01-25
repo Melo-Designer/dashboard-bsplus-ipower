@@ -1,7 +1,7 @@
 'use client'
 
 import { signOut, useSession } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/Button'
 import { LogOut, User } from 'lucide-react'
 import { WebsiteSelector } from './WebsiteSelector'
 
@@ -15,20 +15,18 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 text-sm text-text-color">
           <User className="h-4 w-4" />
           <span>{session?.user?.name || session?.user?.email}</span>
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
+        <button
           onClick={() => signOut({ callbackUrl: '/anmelden' })}
-          className="text-muted-foreground hover:text-primary"
+          className="flex items-center gap-2 text-sm text-text-color hover:text-primary transition-colors"
         >
-          <LogOut className="h-4 w-4 mr-2" />
+          <LogOut className="h-4 w-4" />
           Abmelden
-        </Button>
+        </button>
       </div>
     </header>
   )
