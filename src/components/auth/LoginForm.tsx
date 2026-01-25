@@ -49,8 +49,8 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
-          <AlertCircle className="h-4 w-4" />
+        <div className="bg-primary-50 text-primary-700 px-4 py-3 rounded-lg flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span className="text-sm">{error}</span>
         </div>
       )}
@@ -65,7 +65,6 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
           placeholder="admin@example.com"
           required
           disabled={isLoading}
-          className="rounded-lg"
         />
       </div>
 
@@ -79,13 +78,13 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
           placeholder="••••••••"
           required
           disabled={isLoading}
-          className="rounded-lg"
         />
       </div>
 
       <Button
         type="submit"
-        className="w-full rounded-lg"
+        className="w-full"
+        size="lg"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -101,7 +100,7 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
       <div className="text-center">
         <a
           href="/passwort-vergessen"
-          className="text-sm text-primary hover:underline"
+          className="text-sm text-secondary hover:text-primary transition-colors"
         >
           Passwort vergessen?
         </a>

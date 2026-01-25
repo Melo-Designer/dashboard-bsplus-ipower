@@ -2,18 +2,18 @@ import { Metadata } from 'next'
 import { ForgotPasswordForm } from '@/components/auth/ForgotPasswordForm'
 
 export const metadata: Metadata = {
-  title: 'Passwort vergessen - Dashboard',
+  title: 'Passwort vergessen',
 }
 
 export default function ForgotPasswordPage() {
   return (
     <div className="w-full max-w-md">
-      <div className="bg-white rounded-2xl p-8 shadow-sm">
+      <div className="card">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl text-secondary mb-2">
             Passwort vergessen
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-muted-foreground">
             Geben Sie Ihre E-Mail-Adresse ein, um Ihr Passwort zurückzusetzen.
           </p>
         </div>

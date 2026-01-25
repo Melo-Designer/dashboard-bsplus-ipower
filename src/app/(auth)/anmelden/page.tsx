@@ -4,7 +4,7 @@ import { auth } from '@/lib/auth'
 import { LoginForm } from '@/components/auth/LoginForm'
 
 export const metadata: Metadata = {
-  title: 'Anmelden - Dashboard',
+  title: 'Anmelden',
   description: 'Melden Sie sich im Dashboard an',
 }
 
@@ -22,12 +22,12 @@ export default async function LoginPage({
 
   return (
     <div className="w-full max-w-md">
-      <div className="bg-white rounded-2xl p-8 shadow-sm">
+      <div className="card">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl text-secondary mb-2">
             Dashboard Login
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-muted-foreground">
             BS Plus & iPower Verwaltung
           </p>
         </div>
