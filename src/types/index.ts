@@ -86,25 +86,64 @@ export interface AccordionCard {
   btnClass?: 'primary' | 'secondary'
 }
 
+// Triple section item
+export interface TripleItem {
+  title: string
+  content: string
+}
+
+// Statistics item for numbers section
+export interface StatItem {
+  number: string
+  title: string
+}
+
+// Button configuration
+export interface ButtonItem {
+  text: string
+  type?: 'internal' | 'external' | 'button'
+  link: string
+  btnClass?: 'primary' | 'secondary'
+}
+
 export interface ParsedPageSection {
   id: string
   pageId: string
-  type: string
+  type: 'triple' | 'text_image' | 'black_cta' | 'numbers' | 'hero' | 'accordion'
   title: string | null
   subtitle: string | null
   content: string | null
   imageUrl: string | null
   imageAlt: string | null
-  imageAlign: string | null
-  items?: { title: string; content: string }[]
-  buttons?: { text: string; type: string; link: string; btnClass: string }[]
-  cards?: AccordionCard[]
-  stats?: { value: string; label: string; suffix?: string }[]
+  imageAlign: 'left' | 'right' | null
+  items: TripleItem[]
+  buttons: ButtonItem[]
+  cards: AccordionCard[]
+  stats: StatItem[]
   backgroundImage: string | null
   backgroundColor: string | null
   textColor: string | null
   sortOrder: number
   active: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface ParsedPage {
+  id: string
+  website: WebsiteKey
+  slug: string
+  title: string
+  metaTitle: string | null
+  metaDescription: string | null
+  heroTitle: string | null
+  heroSubtitle: string | null
+  heroDescription: string | null
+  heroImage: string | null
+  heroButtonText: string | null
+  heroButtonLink: string | null
+  active: boolean
+  sections: ParsedPageSection[]
   createdAt: Date
   updatedAt: Date
 }

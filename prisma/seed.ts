@@ -3,6 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import pg from 'pg'
 import { seedSettings } from './seeds/settings'
 import { seedSlides } from './seeds/slides'
+import { seedPages } from './seeds/pages'
 
 function createPrismaClient() {
   const connectionString = process.env.DATABASE_URL
@@ -24,6 +25,9 @@ async function main() {
 
   // Seed slides for both websites
   await seedSlides()
+
+  // Seed pages for both websites
+  await seedPages()
 
   console.log('\nDatabase seed completed successfully!')
 }
