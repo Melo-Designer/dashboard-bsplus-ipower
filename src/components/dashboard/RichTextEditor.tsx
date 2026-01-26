@@ -45,6 +45,7 @@ export function RichTextEditor({ content, onChange, placeholder, className }: Ri
       }),
     ],
     content,
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },
