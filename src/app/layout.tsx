@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { Toaster } from 'sonner'
 import { oswald, sourceSans } from './fonts'
 import './globals.css'
 
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="de" className={`${oswald.variable} ${sourceSans.variable}`}>
       <body className="font-sans antialiased">
         {children}
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   )

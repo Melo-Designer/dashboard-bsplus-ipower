@@ -92,6 +92,7 @@ export function SliderManagement() {
       setSlides((prev) =>
         prev.map((s) => (s.id === slide.id ? { ...s, active: !s.active } : s))
       )
+      toast.success(slide.active ? 'Slide deaktiviert' : 'Slide aktiviert')
     } catch {
       toast.error('Fehler beim Aktualisieren')
     }
