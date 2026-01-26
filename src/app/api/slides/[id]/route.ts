@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { z } from 'zod'
 
 const updateSchema = z.object({
@@ -53,6 +54,9 @@ export async function PUT(
       data: validated,
     })
 
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(slide.website as 'bs_plus' | 'ipower', { tag: 'slides' })
+
     return NextResponse.json(slide)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -75,7 +79,16 @@ export async function DELETE(
     }
 
     const { id } = await params
+
+    // Get website before deleting
+    const slide = await prisma.slide.findUnique({ where: { id }, select: { website: true } })
+
     await prisma.slide.delete({ where: { id } })
+
+    // Trigger frontend cache revalidation (non-blocking)
+    if (slide) {
+      revalidateFrontend(slide.website as 'bs_plus' | 'ipower', { tag: 'slides' })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

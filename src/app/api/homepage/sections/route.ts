@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { Website } from '@/generated/prisma'
 import { z } from 'zod'
 
@@ -103,9 +104,14 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(website as 'bs_plus' | 'ipower', { tag: 'sections' })
+
     return NextResponse.json({
-      ...section,
-      cards: section.cards ? JSON.parse(section.cards) : [],
+      section: {
+        ...section,
+        cards: section.cards ? JSON.parse(section.cards) : [],
+      },
     }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {

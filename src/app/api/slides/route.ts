@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { Website } from '@/generated/prisma'
 import { z } from 'zod'
 
@@ -81,7 +82,10 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(slide, { status: 201 })
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(website as 'bs_plus' | 'ipower', { tag: 'slides' })
+
+    return NextResponse.json({ slide }, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

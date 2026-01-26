@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 
 export async function PUT(request: NextRequest) {
   try {
@@ -11,9 +12,15 @@ export async function PUT(request: NextRequest) {
 
     const { sectionIds } = await request.json()
 
-    if (!Array.isArray(sectionIds)) {
+    if (!Array.isArray(sectionIds) || sectionIds.length === 0) {
       return NextResponse.json({ error: 'Ungültiges Format' }, { status: 400 })
     }
+
+    // Get website from first section
+    const firstSection = await prisma.homepageSection.findUnique({
+      where: { id: sectionIds[0] },
+      select: { website: true },
+    })
 
     await Promise.all(
       sectionIds.map((id, index) =>
@@ -23,6 +30,11 @@ export async function PUT(request: NextRequest) {
         })
       )
     )
+
+    // Trigger frontend cache revalidation (non-blocking)
+    if (firstSection) {
+      revalidateFrontend(firstSection.website as 'bs_plus' | 'ipower', { tag: 'sections' })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

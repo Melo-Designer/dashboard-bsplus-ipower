@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { z } from 'zod'
 
 const cardSchema = z.object({
@@ -72,6 +73,9 @@ export async function PUT(
       data: updateData,
     })
 
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'sections' })
+
     return NextResponse.json({
       ...section,
       cards: section.cards ? JSON.parse(section.cards) : [],
@@ -97,7 +101,19 @@ export async function DELETE(
     }
 
     const { id } = await params
+
+    // Get website before deleting
+    const section = await prisma.homepageSection.findUnique({
+      where: { id },
+      select: { website: true },
+    })
+
     await prisma.homepageSection.delete({ where: { id } })
+
+    // Trigger frontend cache revalidation (non-blocking)
+    if (section) {
+      revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'sections' })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
