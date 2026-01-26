@@ -21,7 +21,6 @@ interface TripleSectionEditorProps {
 }
 
 export function TripleSectionEditor({ section, onSave, onCancel }: TripleSectionEditorProps) {
-  const [title, setTitle] = useState(section.title || '')
   const [items, setItems] = useState<TripleItem[]>(
     section.items.length === 3
       ? section.items
@@ -42,7 +41,6 @@ export function TripleSectionEditor({ section, onSave, onCancel }: TripleSection
 
   const handleSave = () => {
     onSave({
-      title: title || null,
       items,
       backgroundColor,
       textColor,
@@ -51,18 +49,6 @@ export function TripleSectionEditor({ section, onSave, onCancel }: TripleSection
 
   return (
     <div className="space-y-6">
-      {/* Section Title (optional) */}
-      <div>
-        <Label htmlFor="title">Abschnitt-Titel (optional)</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Optionaler Titel über den drei Spalten"
-          className="mt-1"
-        />
-      </div>
-
       {/* Styling */}
       <div className="grid grid-cols-2 gap-4">
         <div>

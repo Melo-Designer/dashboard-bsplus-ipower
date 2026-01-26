@@ -52,6 +52,9 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { ParsedPage, ParsedPageSection, ButtonItem } from '@/types'
+import { TripleSectionEditor } from '@/components/dashboard/pages/section-editors/TripleSectionEditor'
+import { BlackCtaSectionEditor } from '@/components/dashboard/pages/section-editors/BlackCtaSectionEditor'
+import { NumbersSectionEditor } from '@/components/dashboard/pages/section-editors/NumbersSectionEditor'
 
 // Save button component for each tab
 function TabSaveButton({
@@ -601,6 +604,11 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
   const [numbersSection, setNumbersSection] = useState<ParsedPageSection | null>(null)
   const [textImageSections, setTextImageSections] = useState<ParsedPageSection[]>([])
 
+  // Section editing states
+  const [editingTriple, setEditingTriple] = useState(false)
+  const [editingBlackCta, setEditingBlackCta] = useState(false)
+  const [editingNumbers, setEditingNumbers] = useState(false)
+
   const fetchPage = useCallback(async () => {
     try {
       const res = await fetch(`/api/pages/${id}`)
@@ -740,6 +748,63 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
       } catch {
         toast.error('Fehler beim Aktualisieren')
       }
+    }
+  }
+
+  // Save triple section
+  const saveTripleSection = async (updates: Partial<ParsedPageSection>) => {
+    if (!tripleSection) return
+    try {
+      const res = await fetch(`/api/pages/${id}/sections/${tripleSection.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (!res.ok) throw new Error()
+      const updated = await res.json()
+      setTripleSection(updated)
+      setEditingTriple(false)
+      toast.success('3-Spalten Abschnitt gespeichert')
+    } catch {
+      toast.error('Fehler beim Speichern')
+    }
+  }
+
+  // Save black CTA section
+  const saveBlackCtaSection = async (updates: Partial<ParsedPageSection>) => {
+    if (!blackCtaSection) return
+    try {
+      const res = await fetch(`/api/pages/${id}/sections/${blackCtaSection.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (!res.ok) throw new Error()
+      const updated = await res.json()
+      setBlackCtaSection(updated)
+      setEditingBlackCta(false)
+      toast.success('CTA-Bereich gespeichert')
+    } catch {
+      toast.error('Fehler beim Speichern')
+    }
+  }
+
+  // Save numbers section
+  const saveNumbersSection = async (updates: Partial<ParsedPageSection>) => {
+    if (!numbersSection) return
+    try {
+      const res = await fetch(`/api/pages/${id}/sections/${numbersSection.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (!res.ok) throw new Error()
+      const updated = await res.json()
+      setNumbersSection(updated)
+      setEditingNumbers(false)
+      toast.success('Zahlen-Abschnitt gespeichert')
+    } catch {
+      toast.error('Fehler beim Speichern')
     }
   }
 
@@ -1086,9 +1151,42 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
 
             {tripleSection?.active && (
               <div className="p-4 rounded-xl bg-white">
-                <p className="text-sm text-text-color/60 text-center">
-                  Bearbeitung des 3-Spalten Abschnitts wird in einer zukünftigen Version verfügbar sein.
-                </p>
+                {editingTriple ? (
+                  <TripleSectionEditor
+                    section={tripleSection}
+                    onSave={saveTripleSection}
+                    onCancel={() => setEditingTriple(false)}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {/* Preview of items */}
+                    {tripleSection.items.length > 0 && tripleSection.items.some(item => item.title || item.content) ? (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {tripleSection.items.map((item, index) => (
+                          <div key={index} className="p-3 rounded-lg bg-light-grey">
+                            <p className="font-medium text-text-color">{item.title || `Spalte ${index + 1}`}</p>
+                            {item.content && (
+                              <p className="text-sm text-text-color/60 mt-1 line-clamp-3">{item.content}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-text-color/60 text-center py-4">
+                        Keine Inhalte vorhanden. Klicken Sie auf Bearbeiten, um Inhalte hinzuzufügen.
+                      </p>
+                    )}
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setEditingTriple(true)}
+                      >
+                        Bearbeiten
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1173,9 +1271,43 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
 
             {blackCtaSection?.active && (
               <div className="p-4 rounded-xl bg-white">
-                <p className="text-sm text-text-color/60 text-center">
-                  Bearbeitung des CTA-Bereichs wird in einer zukünftigen Version verfügbar sein.
-                </p>
+                {editingBlackCta ? (
+                  <BlackCtaSectionEditor
+                    section={blackCtaSection}
+                    onSave={saveBlackCtaSection}
+                    onCancel={() => setEditingBlackCta(false)}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {/* Preview */}
+                    <div className="p-4 rounded-lg bg-gray-900 text-white">
+                      <p className="font-medium">{blackCtaSection.title || 'Kein Titel'}</p>
+                      {blackCtaSection.content && (
+                        <p className="text-sm text-white/70 mt-1 line-clamp-2">
+                          {blackCtaSection.content.replace(/<[^>]*>/g, '')}
+                        </p>
+                      )}
+                      {blackCtaSection.buttons && blackCtaSection.buttons.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {blackCtaSection.buttons.map((btn, i) => (
+                            <Badge key={i} variant="secondary" className="bg-white/20 text-white text-xs">
+                              {btn.text}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setEditingBlackCta(true)}
+                      >
+                        Bearbeiten
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1202,9 +1334,40 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
 
             {numbersSection?.active && (
               <div className="p-4 rounded-xl bg-white">
-                <p className="text-sm text-text-color/60 text-center">
-                  Bearbeitung der Zahlen wird in einer zukünftigen Version verfügbar sein.
-                </p>
+                {editingNumbers ? (
+                  <NumbersSectionEditor
+                    section={numbersSection}
+                    onSave={saveNumbersSection}
+                    onCancel={() => setEditingNumbers(false)}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {/* Preview of stats */}
+                    {numbersSection.stats.length > 0 && numbersSection.stats.some(stat => stat.number || stat.title) ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {numbersSection.stats.map((stat, index) => (
+                          <div key={index} className="p-3 rounded-lg bg-light-grey text-center">
+                            <p className="text-2xl font-bold text-secondary">{stat.number || '-'}</p>
+                            <p className="text-sm text-text-color/60">{stat.title || `Kennzahl ${index + 1}`}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-text-color/60 text-center py-4">
+                        Keine Kennzahlen vorhanden. Klicken Sie auf Bearbeiten, um Kennzahlen hinzuzufügen.
+                      </p>
+                    )}
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => setEditingNumbers(true)}
+                      >
+                        Bearbeiten
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
