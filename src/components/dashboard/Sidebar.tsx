@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import NextImage from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
@@ -61,19 +62,19 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'h-screen bg-secondary text-white flex flex-col transition-all duration-300',
+        'h-screen bg-white flex flex-col transition-all duration-300 shadow-sm',
         isCollapsed ? 'w-16' : 'w-64'
       )}
     >
       <div className="p-4 flex items-center justify-between">
         {!isCollapsed && (
           <div>
-            <h1 className="font-highlight text-lg font-bold text-white">Dashboard</h1>
+            <h1 className="font-highlight text-lg font-bold text-text-color">Dashboard</h1>
           </div>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1.5 rounded-lg hover:bg-secondary-400 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-text-color"
           aria-label={isCollapsed ? 'Sidebar ausklappen' : 'Sidebar einklappen'}
         >
           {isCollapsed ? (
@@ -91,30 +92,28 @@ export function Sidebar() {
             <button
               onClick={() => !isCollapsed && setIsDropdownOpen(!isDropdownOpen)}
               className={cn(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                website === 'bs_plus'
-                  ? 'bg-primary/20 text-white'
-                  : 'bg-ipower-primary/20 text-white',
-                !isCollapsed && 'hover:bg-secondary-400'
+                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors bg-gray-100',
+                !isCollapsed && 'hover:bg-gray-200'
               )}
               title={isCollapsed ? getDisplayName() : undefined}
             >
-              <div
-                className={cn(
-                  'h-8 w-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0',
-                  website === 'bs_plus' ? 'bg-primary' : 'bg-ipower-primary'
-                )}
-              >
-                {website === 'bs_plus' ? 'BS' : 'iP'}
+              <div className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <NextImage
+                  src={website === 'bs_plus' ? '/img/bsplus-icon.png' : '/img/ipower-icon.png'}
+                  alt={getDisplayName()}
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
               </div>
               {!isCollapsed && (
                 <>
-                  <span className="text-sm font-medium flex-1 text-left">
+                  <span className="text-sm font-medium flex-1 text-left text-text-color">
                     {getDisplayName()}
                   </span>
                   <ChevronDown
                     className={cn(
-                      'h-4 w-4 transition-transform',
+                      'h-4 w-4 transition-transform text-text-color',
                       isDropdownOpen && 'rotate-180'
                     )}
                   />
@@ -124,7 +123,7 @@ export function Sidebar() {
 
             {/* Dropdown */}
             {isDropdownOpen && !isCollapsed && (
-              <div className="absolute left-0 right-0 mt-1 bg-secondary-400 rounded-lg overflow-hidden z-50 shadow-lg">
+              <div className="absolute left-0 right-0 mt-1 bg-white rounded-lg overflow-hidden z-50 shadow-lg">
                 <button
                   onClick={() => {
                     setWebsite('bs_plus')
@@ -133,12 +132,18 @@ export function Sidebar() {
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2.5 transition-colors',
                     website === 'bs_plus'
-                      ? 'bg-primary text-white'
-                      : 'text-secondary-100 hover:bg-secondary-300'
+                      ? 'bg-gray-100 text-text-color'
+                      : 'text-muted-foreground hover:bg-gray-50'
                   )}
                 >
-                  <div className="h-6 w-6 rounded bg-primary flex items-center justify-center text-xs font-bold">
-                    BS
+                  <div className="h-6 w-6 rounded overflow-hidden flex items-center justify-center">
+                    <NextImage
+                      src="/img/bsplus-icon.png"
+                      alt="BS Plus"
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
                   </div>
                   <span className="text-sm">BS Plus</span>
                 </button>
@@ -150,12 +155,18 @@ export function Sidebar() {
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2.5 transition-colors',
                     website === 'ipower'
-                      ? 'bg-ipower-primary text-white'
-                      : 'text-secondary-100 hover:bg-secondary-300'
+                      ? 'bg-gray-100 text-text-color'
+                      : 'text-muted-foreground hover:bg-gray-50'
                   )}
                 >
-                  <div className="h-6 w-6 rounded bg-ipower-primary flex items-center justify-center text-xs font-bold">
-                    iP
+                  <div className="h-6 w-6 rounded overflow-hidden flex items-center justify-center">
+                    <NextImage
+                      src="/img/ipower-icon.png"
+                      alt="iPower"
+                      width={24}
+                      height={24}
+                      className="object-contain"
+                    />
                   </div>
                   <span className="text-sm">iPower</span>
                 </button>
@@ -163,7 +174,7 @@ export function Sidebar() {
             )}
           </div>
         ) : (
-          <div className="h-12 rounded-lg bg-secondary-400 animate-pulse" />
+          <div className="h-12 rounded-lg bg-gray-100 animate-pulse" />
         )}
       </div>
 
@@ -180,13 +191,13 @@ export function Sidebar() {
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                 isActive
                   ? 'bg-primary text-white'
-                  : 'text-secondary-100 hover:bg-secondary-400 hover:text-white'
+                  : 'text-muted-foreground hover:bg-gray-50 hover:text-text-color'
               )}
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
               {!isCollapsed && (
-                <span className="text-sm font-medium">{item.label}</span>
+                <span className="text-sm">{item.label}</span>
               )}
             </Link>
           )
