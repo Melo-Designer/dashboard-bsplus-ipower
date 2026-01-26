@@ -8,13 +8,6 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select'
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -442,45 +435,40 @@ function SortableSectionCard({
               />
             </div>
 
-            {/* Styling Row */}
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <Label className="text-xs text-text-color/50">Hintergrund</Label>
-                <Select
-                  value={localData.backgroundColor}
-                  onValueChange={(value) => {
-                    setLocalData((prev) => ({ ...prev, backgroundColor: value }))
-                    onUpdate({ backgroundColor: value })
+            {/* Accent Color Selector */}
+            <div className="flex items-center gap-3">
+              <Label className="text-xs text-text-color/50">Akzentfarbe</Label>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLocalData((prev) => ({ ...prev, backgroundColor: 'primary' }))
+                    onUpdate({ backgroundColor: 'primary' })
+                    toast.success('Farbe aktualisiert')
                   }}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Hell</SelectItem>
-                    <SelectItem value="primary">Primär</SelectItem>
-                    <SelectItem value="secondary">Sekundär</SelectItem>
-                    <SelectItem value="dark">Dunkel</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex-1">
-                <Label className="text-xs text-text-color/50">Textfarbe</Label>
-                <Select
-                  value={localData.textColor}
-                  onValueChange={(value) => {
-                    setLocalData((prev) => ({ ...prev, textColor: value }))
-                    onUpdate({ textColor: value })
+                  className={cn(
+                    'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                    localData.backgroundColor === 'primary' || localData.backgroundColor === 'light'
+                      ? 'border-secondary scale-110'
+                      : 'border-text-color/20 hover:border-text-color/40'
+                  )}
+                  title="Weiß"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLocalData((prev) => ({ ...prev, backgroundColor: 'secondary' }))
+                    onUpdate({ backgroundColor: 'secondary' })
+                    toast.success('Farbe aktualisiert')
                   }}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dark">Dunkel</SelectItem>
-                    <SelectItem value="light">Hell</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className={cn(
+                    'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                    localData.backgroundColor === 'secondary'
+                      ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                      : 'border-transparent hover:scale-105'
+                  )}
+                  title="Sekundär"
+                />
               </div>
             </div>
 
@@ -512,7 +500,7 @@ function SortableSectionCard({
                         'border-none rounded-full px-4 py-3 cursor-pointer text-center',
                         'transition-all duration-300 ease-in-out hover:opacity-80',
                         'w-[23%] min-w-[140px] max-md:w-full',
-                        card.btnClass === 'secondary'
+                        localData.backgroundColor === 'secondary'
                           ? 'bg-secondary text-white'
                           : 'bg-white text-text-color'
                       )}
@@ -630,36 +618,6 @@ function SortableSectionCard({
                 </div>
               </div>
 
-              <div>
-                <Label>Button-Farbe</Label>
-                <Select
-                  value={editingCard.card.btnClass || 'primary'}
-                  onValueChange={(value) =>
-                    setEditingCard({
-                      ...editingCard,
-                      card: { ...editingCard.card, btnClass: value as 'primary' | 'secondary' },
-                    })
-                  }
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="primary">
-                      <span className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-light-grey border border-text-color/20"></span>
-                        Primär (Hell/Grau)
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="secondary">
-                      <span className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-secondary"></span>
-                        Sekundär (Blau)
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           )}
 
