@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs'
+import { HeadersManagement } from '@/components/dashboard/settings/HeadersManagement'
+import { LegalPagesManagement } from '@/components/dashboard/settings/LegalPagesManagement'
 import { toast } from 'sonner'
 import { SETTING_GROUPS, SettingDefinition } from '@/lib/constants/settings'
 
@@ -85,37 +88,71 @@ export default function SettingsPage() {
             Konfigurieren Sie die Einstellungen für {getDisplayName()}
           </p>
         </div>
-        <Button variant="secondary" onClick={handleSave} disabled={isSaving}>
-          {isSaving ? 'Wird gespeichert...' : 'Speichern'}
-        </Button>
       </div>
 
-      {/* Settings Groups */}
-      <div className="space-y-6">
-        {SETTING_GROUPS.map((group) => (
-          <div key={group.title} className="rounded-xl bg-light-grey p-6">
-            <h2 className="text-lg font-highlight font-bold text-secondary">
-              {group.title}
-            </h2>
-            {group.description && (
-              <p className="text-sm text-text-color/60 mt-1">{group.description}</p>
-            )}
+      {/* Tabs */}
+      <Tabs defaultValue="general" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="general">Allgemein</TabsTrigger>
+          <TabsTrigger value="headers">Seitenköpfe</TabsTrigger>
+          <TabsTrigger value="legal">Rechtliches</TabsTrigger>
+        </TabsList>
 
-            <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              {group.settings.map((setting) => (
-                <SettingField
-                  key={setting.key}
-                  setting={setting}
-                  value={settings[setting.key] || ''}
-                  onChange={(value) => handleChange(setting.key, value)}
-                />
-              ))}
-            </div>
+        {/* General Settings Tab */}
+        <TabsContent value="general" className="space-y-6">
+          <div className="flex justify-end">
+            <Button variant="secondary" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? 'Wird gespeichert...' : 'Speichern'}
+            </Button>
           </div>
-        ))}
-      </div>
 
-      {/* Sticky save button for mobile */}
+          <div className="space-y-6">
+            {SETTING_GROUPS.map((group) => (
+              <div key={group.title} className="rounded-xl bg-light-grey p-6">
+                <h2 className="text-lg font-highlight font-bold text-secondary">
+                  {group.title}
+                </h2>
+                {group.description && (
+                  <p className="text-sm text-text-color/60 mt-1">{group.description}</p>
+                )}
+
+                <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                  {group.settings.map((setting) => (
+                    <SettingField
+                      key={setting.key}
+                      setting={setting}
+                      value={settings[setting.key] || ''}
+                      onChange={(value) => handleChange(setting.key, value)}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Headers Tab */}
+        <TabsContent value="headers">
+          <div className="rounded-xl bg-light-grey p-6">
+            <h2 className="text-lg font-highlight font-bold text-secondary mb-4">
+              Seitenköpfe
+            </h2>
+            <HeadersManagement />
+          </div>
+        </TabsContent>
+
+        {/* Legal Pages Tab */}
+        <TabsContent value="legal">
+          <div className="rounded-xl bg-light-grey p-6">
+            <h2 className="text-lg font-highlight font-bold text-secondary mb-4">
+              Rechtliche Seiten
+            </h2>
+            <LegalPagesManagement />
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Sticky save button for mobile (general tab only) */}
       <div className="fixed bottom-6 right-6 sm:hidden">
         <Button
           variant="secondary"
