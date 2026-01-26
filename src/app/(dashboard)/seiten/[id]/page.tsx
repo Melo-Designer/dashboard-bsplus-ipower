@@ -746,7 +746,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center gap-4">
           <Skeleton className="h-10 w-10 rounded-lg" />
           <Skeleton className="h-8 w-48" />
@@ -760,7 +760,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
   if (!page) return null
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
