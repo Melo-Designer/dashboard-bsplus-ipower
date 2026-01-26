@@ -114,15 +114,19 @@ function ItemCard({
   )
 }
 
-// Sortable Text+Image Card
+// Sortable Text+Image Card - Same layout as homepage sections (1/3 image + 2/3 content)
 function SortableTextImageCard({
   section,
   onEdit,
   onDelete,
+  onToggleActive,
+  onOpenMediaModal,
 }: {
   section: ParsedPageSection
   onEdit: () => void
   onDelete: () => void
+  onToggleActive: () => void
+  onOpenMediaModal: () => void
 }) {
   const {
     attributes,
@@ -144,55 +148,33 @@ function SortableTextImageCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-xl p-4 border-l-4 border-secondary shadow-sm ${isDragging ? 'shadow-xl' : 'hover:shadow-md'} transition-shadow`}
+      className={`rounded-xl bg-light-grey overflow-hidden shadow-sm ${isDragging ? 'shadow-xl' : ''}`}
     >
-      <div className="flex items-start gap-3">
-        {/* Drag Handle */}
+      {/* Header with drag handle and controls */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-white/50">
         <button
           {...attributes}
           {...listeners}
-          className="p-1 text-text-color/40 hover:text-text-color/60 cursor-grab active:cursor-grabbing"
+          className="cursor-grab text-text-color/40 hover:text-text-color/60"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
           </svg>
         </button>
 
-        {/* Thumbnail */}
-        {section.imageUrl && (
-          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-light-grey shrink-0">
-            <Image
-              src={getImageUrl(section.imageUrl)}
-              alt={section.imageAlt || ''}
-              fill
-              className="object-cover"
-            />
-          </div>
-        )}
+        <Badge variant="outline" className="text-xs">
+          Bild {section.imageAlign === 'left' ? 'links' : 'rechts'}
+        </Badge>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant="outline" className="text-xs">
-              Bild {section.imageAlign === 'left' ? 'links' : 'rechts'}
-            </Badge>
-          </div>
-          <h3 className="font-medium text-text-color truncate">
-            {section.title || 'Ohne Titel'}
-          </h3>
-          {section.content && (
-            <p className="text-sm text-text-color/60 line-clamp-1 mt-0.5">
-              {section.content.replace(/<[^>]*>/g, '').substring(0, 100)}
-            </p>
-          )}
-        </div>
+        <div className="flex-1" />
 
-        {/* Actions */}
-        <div className="flex gap-1 shrink-0">
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-text-color/50">Aktiv</span>
+          <Switch checked={section.active} onCheckedChange={onToggleActive} />
           <button
             type="button"
             onClick={onEdit}
-            className="p-2 rounded-full text-text-color/50 hover:text-secondary hover:bg-light-grey"
+            className="p-2 text-text-color/40 hover:text-secondary"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -201,12 +183,74 @@ function SortableTextImageCard({
           <button
             type="button"
             onClick={onDelete}
-            className="p-2 rounded-full text-text-color/50 hover:text-red-600 hover:bg-red-50"
+            className="p-2 text-text-color/40 hover:text-red-600"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
+        </div>
+      </div>
+
+      {/* Main content: Image (1/3) + Content (2/3) */}
+      <div className="flex flex-col md:flex-row">
+        {/* Left: Image (1/3) */}
+        <div
+          onClick={onOpenMediaModal}
+          className="w-full md:w-1/3 min-h-[200px] md:min-h-[280px] relative cursor-pointer group bg-text-color/10"
+        >
+          {section.imageUrl ? (
+            <>
+              <Image
+                src={getImageUrl(section.imageUrl)}
+                alt={section.imageAlt || section.title || ''}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-white text-sm font-medium">Bild ändern</span>
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-text-color/40 group-hover:text-text-color/60 transition-colors">
+              <svg className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-sm">Bild hinzufügen</span>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Content (2/3) */}
+        <div className="w-full md:w-2/3 p-5 space-y-3">
+          <div>
+            <Label className="text-xs text-text-color/50">Titel</Label>
+            <p className="font-medium text-text-color mt-1">
+              {section.title || 'Ohne Titel'}
+            </p>
+          </div>
+
+          {section.content && (
+            <div>
+              <Label className="text-xs text-text-color/50">Inhalt</Label>
+              <p className="text-sm text-text-color/70 mt-1 line-clamp-4">
+                {section.content.replace(/<[^>]*>/g, '')}
+              </p>
+            </div>
+          )}
+
+          {section.buttons && section.buttons.length > 0 && (
+            <div>
+              <Label className="text-xs text-text-color/50">Buttons</Label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {section.buttons.map((btn, i) => (
+                  <Badge key={i} variant="secondary" className="text-xs">
+                    {btn.text}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -527,6 +571,9 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     section: ParsedPageSection | null
   }>({ open: false, section: null })
 
+  // Text+Image media modal state (for inline image editing)
+  const [editingTextImageId, setEditingTextImageId] = useState<string | null>(null)
+
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -744,6 +791,40 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     })
   }
 
+  // Toggle text+image section active state
+  const toggleTextImageActive = async (section: ParsedPageSection) => {
+    try {
+      await fetch(`/api/pages/${id}/sections/${section.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ active: !section.active }),
+      })
+      setTextImageSections((prev) =>
+        prev.map((s) => (s.id === section.id ? { ...s, active: !s.active } : s))
+      )
+      toast.success(section.active ? 'Abschnitt deaktiviert' : 'Abschnitt aktiviert')
+    } catch {
+      toast.error('Fehler beim Aktualisieren')
+    }
+  }
+
+  // Update text+image section image
+  const updateTextImageImage = async (sectionId: string, imageUrl: string) => {
+    try {
+      await fetch(`/api/pages/${id}/sections/${sectionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl }),
+      })
+      setTextImageSections((prev) =>
+        prev.map((s) => (s.id === sectionId ? { ...s, imageUrl } : s))
+      )
+      toast.success('Bild aktualisiert')
+    } catch {
+      toast.error('Fehler beim Aktualisieren')
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -890,88 +971,95 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
 
         {/* Tab: Hero */}
         <TabsContent value="hero" className="mt-6">
-          <div className="p-6 rounded-xl bg-light-grey space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-text-color">Hero-Bereich</h2>
+          <div className="rounded-xl bg-light-grey overflow-hidden shadow-sm">
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-white/50">
+              <h2 className="font-bold text-text-color">Hero-Bereich</h2>
               <TabSaveButton onClick={saveHero} loading={saving === 'hero'} />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <Label htmlFor="heroTitle">Hero-Titel</Label>
-                <Input
-                  id="heroTitle"
-                  value={formData.heroTitle}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, heroTitle: e.target.value }))}
-                  placeholder="z.B. BHKW Anlagenbau | Kraft trifft Wärme"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="heroSubtitle">Hero-Untertitel</Label>
-                <Input
-                  id="heroSubtitle"
-                  value={formData.heroSubtitle}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, heroSubtitle: e.target.value }))}
-                  placeholder="z.B. Ihr Plus an Effizienz"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label>Hero-Bild</Label>
-                <div
-                  onClick={() => setMediaModalOpen(true)}
-                  className="mt-1 relative h-32 rounded-lg bg-white cursor-pointer group overflow-hidden"
-                >
-                  {formData.heroImage ? (
-                    <>
-                      <Image
-                        src={getImageUrl(formData.heroImage)}
-                        alt="Hero"
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">Ändern</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-text-color/40 group-hover:text-text-color/60">
-                      <span className="text-sm">Bild auswählen</span>
+            {/* Main content: Image (1/3) + Content (2/3) */}
+            <div className="flex flex-col md:flex-row">
+              {/* Left: Hero Image (1/3) */}
+              <div
+                onClick={() => setMediaModalOpen(true)}
+                className="w-full md:w-1/3 min-h-[250px] md:min-h-[350px] relative cursor-pointer group bg-text-color/10"
+              >
+                {formData.heroImage ? (
+                  <>
+                    <Image
+                      src={getImageUrl(formData.heroImage)}
+                      alt="Hero"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">Bild ändern</span>
                     </div>
-                  )}
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-text-color/40 group-hover:text-text-color/60 transition-colors">
+                    <svg className="h-12 w-12 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm">Bild hinzufügen</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Content (2/3) */}
+              <div className="w-full md:w-2/3 p-5 space-y-4">
+                <div>
+                  <Label className="text-xs text-text-color/50">Hero-Titel</Label>
+                  <Input
+                    value={formData.heroTitle}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, heroTitle: e.target.value }))}
+                    placeholder="z.B. BHKW Anlagenbau | Kraft trifft Wärme"
+                    className="mt-1"
+                  />
                 </div>
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="heroDescription">Hero-Beschreibung</Label>
-                <Textarea
-                  id="heroDescription"
-                  value={formData.heroDescription}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, heroDescription: e.target.value }))}
-                  placeholder="Beschreibungstext für den Hero-Bereich"
-                  rows={3}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="heroButtonText">Button-Text</Label>
-                <Input
-                  id="heroButtonText"
-                  value={formData.heroButtonText}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, heroButtonText: e.target.value }))}
-                  placeholder="z.B. Jetzt anfragen"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="heroButtonLink">Button-Link</Label>
-                <Input
-                  id="heroButtonLink"
-                  value={formData.heroButtonLink}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, heroButtonLink: e.target.value }))}
-                  placeholder="z.B. /kontakt"
-                  className="mt-1"
-                />
+
+                <div>
+                  <Label className="text-xs text-text-color/50">Hero-Untertitel</Label>
+                  <Input
+                    value={formData.heroSubtitle}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, heroSubtitle: e.target.value }))}
+                    placeholder="z.B. Ihr Plus an Effizienz"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-xs text-text-color/50">Hero-Beschreibung</Label>
+                  <Textarea
+                    value={formData.heroDescription}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, heroDescription: e.target.value }))}
+                    placeholder="Beschreibungstext für den Hero-Bereich"
+                    rows={3}
+                    className="mt-1"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs text-text-color/50">Button-Text</Label>
+                    <Input
+                      value={formData.heroButtonText}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, heroButtonText: e.target.value }))}
+                      placeholder="z.B. Jetzt anfragen"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-text-color/50">Button-Link</Label>
+                    <Input
+                      value={formData.heroButtonLink}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, heroButtonLink: e.target.value }))}
+                      placeholder="z.B. /kontakt"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1046,13 +1134,15 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                   items={textImageSections.map((s) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="space-y-3">
+                  <div className="space-y-6">
                     {textImageSections.map((section) => (
                       <SortableTextImageCard
                         key={section.id}
                         section={section}
                         onEdit={() => setTextImageModal({ open: true, section })}
                         onDelete={() => deleteTextImageSection(section.id)}
+                        onToggleActive={() => toggleTextImageActive(section)}
+                        onOpenMediaModal={() => setEditingTextImageId(section.id)}
                       />
                     ))}
                   </div>
@@ -1139,6 +1229,20 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
         section={textImageModal.section}
         onSave={handleTextImageSave}
         pageId={id}
+      />
+
+      {/* Media Selector Modal for Text+Image Sections */}
+      <MediaSelectorModal
+        isOpen={!!editingTextImageId}
+        onClose={() => setEditingTextImageId(null)}
+        onSelect={(media) => {
+          const selectedMedia = Array.isArray(media) ? media[0] : media
+          if (editingTextImageId) {
+            updateTextImageImage(editingTextImageId, selectedMedia.url)
+          }
+          setEditingTextImageId(null)
+        }}
+        title="Bild auswählen"
       />
     </div>
   )
