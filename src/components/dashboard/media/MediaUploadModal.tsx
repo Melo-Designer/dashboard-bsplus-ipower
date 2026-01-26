@@ -248,7 +248,12 @@ export function MediaUploadModal({
             const response = JSON.parse(xhr.responseText)
             resolve(response.media)
           } else {
-            reject(new Error(xhr.statusText || 'Upload fehlgeschlagen'))
+            try {
+              const errorResponse = JSON.parse(xhr.responseText)
+              reject(new Error(errorResponse.error || 'Upload fehlgeschlagen'))
+            } catch {
+              reject(new Error(xhr.status === 401 ? 'Nicht autorisiert' : 'Upload fehlgeschlagen'))
+            }
           }
         })
 
