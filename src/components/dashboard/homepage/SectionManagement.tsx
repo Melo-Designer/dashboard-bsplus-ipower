@@ -103,6 +103,7 @@ export function SectionManagement() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sectionIds: newSections.map((s) => s.id) }),
       })
+      toast.success('Reihenfolge aktualisiert')
     } catch {
       toast.error('Fehler beim Sortieren')
       fetchSections()
@@ -119,6 +120,7 @@ export function SectionManagement() {
       setSections((prev) =>
         prev.map((s) => (s.id === section.id ? { ...s, active: !s.active } : s))
       )
+      toast.success(section.active ? 'Abschnitt deaktiviert' : 'Abschnitt aktiviert')
     } catch {
       toast.error('Fehler beim Aktualisieren')
     }
@@ -327,8 +329,9 @@ function SortableSectionCard({
   const handleSaveCard = () => {
     if (!editingCard) return
 
+    const isNewCard = editingCard.index >= localData.cards.length
     const newCards = [...localData.cards]
-    if (editingCard.index >= localData.cards.length) {
+    if (isNewCard) {
       // Adding new card
       newCards.push(editingCard.card)
     } else {
@@ -339,6 +342,7 @@ function SortableSectionCard({
     setLocalData((prev) => ({ ...prev, cards: newCards }))
     onUpdate({ cards: newCards })
     setEditingCard(null)
+    toast.success(isNewCard ? 'Karte hinzugefügt' : 'Karte aktualisiert')
   }
 
   const handleDeleteCard = (index: number) => {
@@ -346,6 +350,7 @@ function SortableSectionCard({
     setLocalData((prev) => ({ ...prev, cards: newCards }))
     onUpdate({ cards: newCards })
     setDeleteConfirm(null)
+    toast.success('Karte gelöscht')
   }
 
   return (
@@ -545,6 +550,7 @@ function SortableSectionCard({
         onSelect={(media) => {
           const selectedMedia = Array.isArray(media) ? media[0] : media
           onUpdate({ backgroundImage: selectedMedia.url })
+          toast.success('Bild aktualisiert')
         }}
         title="Hintergrundbild auswählen"
       />
