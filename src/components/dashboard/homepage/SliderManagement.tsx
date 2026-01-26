@@ -268,6 +268,7 @@ function SortableSlideCard({
   })
 
   const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   // Sync local data when slide changes
   useEffect(() => {
@@ -279,11 +280,18 @@ function SortableSlideCard({
     })
   }, [slide])
 
-  const handleBlur = (field: string, value: string) => {
-    const currentValue = slide[field as keyof Slide]
-    if (value !== currentValue) {
-      onUpdate({ [field]: value })
-    }
+  // Check if there are unsaved changes
+  const hasChanges =
+    localData.title !== (slide.title || '') ||
+    localData.subtitle !== (slide.subtitle || '') ||
+    localData.linkUrl !== (slide.linkUrl || '') ||
+    localData.linkText !== (slide.linkText || '')
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    await onUpdate(localData)
+    setIsSaving(false)
+    toast.success('Änderungen gespeichert')
   }
 
   return (
@@ -360,7 +368,6 @@ function SortableSlideCard({
               <Input
                 value={localData.title}
                 onChange={(e) => setLocalData((prev) => ({ ...prev, title: e.target.value }))}
-                onBlur={(e) => handleBlur('title', e.target.value)}
                 className="mt-1 text-lg font-medium"
                 placeholder="Slide Titel"
               />
@@ -372,7 +379,6 @@ function SortableSlideCard({
               <Textarea
                 value={localData.subtitle}
                 onChange={(e) => setLocalData((prev) => ({ ...prev, subtitle: e.target.value }))}
-                onBlur={(e) => handleBlur('subtitle', e.target.value)}
                 rows={3}
                 className="mt-1"
                 placeholder="Beschreibung oder Untertitel..."
@@ -386,7 +392,6 @@ function SortableSlideCard({
                 <Input
                   value={localData.linkUrl}
                   onChange={(e) => setLocalData((prev) => ({ ...prev, linkUrl: e.target.value }))}
-                  onBlur={(e) => handleBlur('linkUrl', e.target.value)}
                   className="mt-1"
                   placeholder="/seite oder https://..."
                 />
@@ -396,12 +401,25 @@ function SortableSlideCard({
                 <Input
                   value={localData.linkText}
                   onChange={(e) => setLocalData((prev) => ({ ...prev, linkText: e.target.value }))}
-                  onBlur={(e) => handleBlur('linkText', e.target.value)}
                   className="mt-1"
                   placeholder="Mehr erfahren"
                 />
               </div>
             </div>
+
+            {/* Save Button - only visible when there are changes */}
+            {hasChanges && (
+              <div className="pt-2">
+                <Button
+                  variant="secondary"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto"
+                >
+                  {isSaving ? 'Speichern...' : 'Änderungen speichern'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

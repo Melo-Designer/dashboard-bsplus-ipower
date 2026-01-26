@@ -284,6 +284,7 @@ function SortableSectionCard({
 
   const [editingCard, setEditingCard] = useState<{ index: number; card: AccordionCard } | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'section' | 'card'; index?: number } | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
 
   // Sync local data when section changes
   useEffect(() => {
@@ -297,11 +298,19 @@ function SortableSectionCard({
     })
   }, [section])
 
-  const handleBlur = (field: string, value: string) => {
-    const currentValue = section[field as keyof ParsedHomepageSection]
-    if (value !== currentValue) {
-      onUpdate({ [field]: value })
-    }
+  // Check if there are unsaved changes (excluding cards which save immediately)
+  const hasChanges =
+    localData.title !== section.title ||
+    localData.description !== (section.description || '')
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    await onUpdate({
+      title: localData.title,
+      description: localData.description,
+    })
+    setIsSaving(false)
+    toast.success('Änderungen gespeichert')
   }
 
   const handleAddCard = () => {
@@ -413,7 +422,6 @@ function SortableSectionCard({
               <Input
                 value={localData.title}
                 onChange={(e) => setLocalData((prev) => ({ ...prev, title: e.target.value }))}
-                onBlur={(e) => handleBlur('title', e.target.value)}
                 className="mt-1 text-lg font-medium"
               />
             </div>
@@ -424,7 +432,6 @@ function SortableSectionCard({
               <Textarea
                 value={localData.description}
                 onChange={(e) => setLocalData((prev) => ({ ...prev, description: e.target.value }))}
-                onBlur={(e) => handleBlur('description', e.target.value)}
                 rows={2}
                 className="mt-1"
               />
@@ -513,6 +520,20 @@ function SortableSectionCard({
                 </div>
               )}
             </div>
+
+            {/* Save Button - only visible when there are changes */}
+            {hasChanges && (
+              <div className="pt-2">
+                <Button
+                  variant="secondary"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto"
+                >
+                  {isSaving ? 'Speichern...' : 'Änderungen speichern'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
