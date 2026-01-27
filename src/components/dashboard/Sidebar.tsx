@@ -13,31 +13,37 @@ import {
   Briefcase,
   MessageSquare,
   Newspaper,
-  Layers,
   ChevronLeft,
   ChevronRight,
   Home,
   ChevronDown,
+  Globe,
 } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { useWebsite } from './WebsiteSelector'
 
 interface NavItem {
   label: string
-  href: string
+  href?: string
   icon: React.ElementType
+  children?: NavItem[]
 }
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'Startseite', href: '/startseite', icon: Home },
-  { label: 'Seiten', href: '/seiten', icon: FileText },
-  { label: 'Sektionen', href: '/sektionen', icon: Layers },
   { label: 'Blog', href: '/blog', icon: Newspaper },
-  { label: 'Medien', href: '/medien', icon: Image },
   { label: 'Stellenangebote', href: '/stellenangebote', icon: Briefcase },
+  {
+    label: 'Website',
+    icon: Globe,
+    children: [
+      { label: 'Startseite', href: '/startseite', icon: Home },
+      { label: 'Unterseiten', href: '/seiten', icon: FileText },
+    ],
+  },
   { label: 'Bewerbungen', href: '/bewerbungen', icon: Users },
   { label: 'Nachrichten', href: '/nachrichten', icon: MessageSquare },
+  { label: 'Medien', href: '/medien', icon: Image },
   { label: 'Einstellungen', href: '/einstellungen', icon: Settings },
 ]
 
@@ -46,7 +52,14 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const { website, setWebsite, isLoaded, getDisplayName } = useWebsite()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Website'])
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const toggleGroup = (label: string) => {
+    setExpandedGroups((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]
+    )
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -180,13 +193,78 @@ export function Sidebar() {
 
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = pathname === item.href ||
-            (item.href !== '/' && pathname.startsWith(item.href))
+          // Item with children (expandable group)
+          if (item.children) {
+            const isExpanded = expandedGroups.includes(item.label)
+            const hasActiveChild = item.children.some(
+              (child) =>
+                pathname === child.href ||
+                (child.href !== '/' && child.href && pathname.startsWith(child.href))
+            )
+
+            return (
+              <div key={item.label}>
+                <button
+                  onClick={() => !isCollapsed && toggleGroup(item.label)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
+                    hasActiveChild
+                      ? 'text-primary'
+                      : 'text-muted-foreground hover:bg-gray-50 hover:text-text-color'
+                  )}
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {!isCollapsed && (
+                    <>
+                      <span className="text-sm flex-1 text-left">{item.label}</span>
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 transition-transform',
+                          isExpanded && 'rotate-180'
+                        )}
+                      />
+                    </>
+                  )}
+                </button>
+                {isExpanded && !isCollapsed && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {item.children.map((child) => {
+                      const isChildActive =
+                        pathname === child.href ||
+                        (child.href !== '/' && child.href && pathname.startsWith(child.href))
+
+                      return (
+                        <Link
+                          key={child.href}
+                          href={child.href || '#'}
+                          className={cn(
+                            'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors',
+                            isChildActive
+                              ? 'bg-primary text-white'
+                              : 'text-muted-foreground hover:bg-gray-50 hover:text-text-color'
+                          )}
+                        >
+                          <child.icon className="h-4 w-4 flex-shrink-0" />
+                          <span className="text-sm">{child.label}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          }
+
+          // Regular nav item
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && item.href && pathname.startsWith(item.href))
 
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={item.href || '#'}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                 isActive
@@ -196,9 +274,7 @@ export function Sidebar() {
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && (
-                <span className="text-sm">{item.label}</span>
-              )}
+              {!isCollapsed && <span className="text-sm">{item.label}</span>}
             </Link>
           )
         })}
