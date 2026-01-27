@@ -46,8 +46,15 @@ const bsPlusSettings: Record<string, string> = {
   email_application_recipient: 'info@bsplus-service.de',
 
   // Misc
-  google_maps_embed: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2404.8!2d7.9167!3d52.8833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDUzJzAwLjAiTiA3wrA1NSczMC4xIkU!5e0!3m2!1sde!2sde!4v1',
+  google_maps_embed: 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d9639.50792506913!2d7.9086251!3d52.8426017!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b713bc43a4fa7b%3A0x9c65c47a9b45c972!2sBSplus%20MotorenService!5e0!3m2!1sen!2sbr!4v1729111101968!5m2!1sen!2sbr',
   opening_hours: 'Mo-Fr: 08:00 - 17:00 Uhr',
+
+  // Contact Page Content
+  contact_form_title: 'SIE HABEN FRAGEN?',
+  contact_form_description: 'Kommen Sie mit uns ins Gespräch, wenn es um Ihr Energieprojekt geht. Schicken Sie uns Ihr Feedback. Oder wenn Sie einfach nur mehr über BSplus erfahren möchten, wir freuen uns über Ihre Kontaktaufnahme.',
+  contact_cta_title: '',
+  contact_cta_description: '',
+  contact_cta_image: '',
 }
 
 // iPower Settings
@@ -82,8 +89,15 @@ const iPowerSettings: Record<string, string> = {
   email_application_recipient: 'info@ipower.de',
 
   // Misc
-  google_maps_embed: 'https://maps.google.com/maps?ll=52.842602,7.908625&z=14&t=m&hl=de&gl=DE&mapclient=embed&cid=11269629673434630514',
+  google_maps_embed: 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d9639.50792506913!2d7.9086251!3d52.8426017!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b713bc43a4fa7b%3A0x9c65c47a9b45c972!2sBSplus%20MotorenService!5e0!3m2!1sen!2sbr!4v1729111101968!5m2!1sen!2sbr',
   opening_hours: 'Mo-Fr: 08:00 - 17:00 Uhr',
+
+  // Contact Page Content
+  contact_form_title: 'SIE HABEN FRAGEN?',
+  contact_form_description: 'Wir zeigen Ihnen gerne, welchen wertvollen Beitrag unsere intelligent vernetzten Lösungen zu Ihrem Erfolg leisten können.\n\nWenn Sie mehr über unser Unternehmen, unsere Arbeit und unsere Projekte erfahren wollen oder und Anregungen geben und Feedback erteilen wollen – wir sind für Sie da!',
+  contact_cta_title: 'Langfristige Partnerschaft über die Wärmeplanung hinaus',
+  contact_cta_description: 'Wir begleiten Sie nicht nur bei der Wärmeplanung, sondern bieten eine umfassende, langfristige Zusammenarbeit. Mit unserer langjährigen Expertise in Projekten im Bereich erneuerbarer Energien entwickeln wir nachhaltige und dezentrale Energielösungen und kümmern uns um den Aufbau der gesamten Netz- und Erzeugungsinfrastruktur. Unsere Erkenntnisse aus der Planung nutzen wir, um Unternehmen und Initiativen bei der Umsetzung der Wärmeplanung in Ihrer Region effektiv zu unterstützen.',
+  contact_cta_image: '/img/black.jpg',
 }
 
 async function seedSettings() {

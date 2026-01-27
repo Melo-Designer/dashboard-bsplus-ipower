@@ -39,6 +39,7 @@ const navItems: NavItem[] = [
     children: [
       { label: 'Startseite', href: '/startseite', icon: Home },
       { label: 'Unterseiten', href: '/seiten', icon: FileText },
+      { label: 'Kontakt', href: '/kontakt', icon: MessageSquare },
     ],
   },
   { label: 'Bewerbungen', href: '/bewerbungen', icon: Users },

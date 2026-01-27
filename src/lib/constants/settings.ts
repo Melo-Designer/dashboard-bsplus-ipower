@@ -62,6 +62,17 @@ export const SETTING_GROUPS: SettingGroup[] = [
     ],
   },
   {
+    title: 'Kontaktseite',
+    description: 'Inhalte für die Kontaktseite',
+    settings: [
+      { key: 'contact_form_title', label: 'Formularbereich Titel', type: 'text', placeholder: 'SIE HABEN FRAGEN?' },
+      { key: 'contact_form_description', label: 'Formularbereich Beschreibung', type: 'textarea', description: 'Einführungstext über dem Kontaktformular' },
+      { key: 'contact_cta_title', label: 'CTA Titel (optional)', type: 'text', description: 'Titel für den schwarzen CTA-Bereich am Ende' },
+      { key: 'contact_cta_description', label: 'CTA Beschreibung (optional)', type: 'textarea', description: 'Text für den schwarzen CTA-Bereich' },
+      { key: 'contact_cta_image', label: 'CTA Hintergrundbild (optional)', type: 'url', description: 'Hintergrundbild für den CTA-Bereich' },
+    ],
+  },
+  {
     title: 'Sonstiges',
     settings: [
       { key: 'google_maps_embed', label: 'Google Maps Embed URL', type: 'url', description: 'Einbettungs-URL für Google Maps auf der Kontaktseite' },

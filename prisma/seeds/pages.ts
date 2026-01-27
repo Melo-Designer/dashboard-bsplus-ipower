@@ -207,6 +207,68 @@ export async function seedPages() {
   }
 
   console.log(`  ✓ Created ${sections.length} sections for BHKW Anlagenbau page`)
+
+  // Seed PageHeaders for contact pages
+  console.log('Seeding page headers...')
+
+  // BS Plus Kontakt PageHeader
+  await prisma.pageHeader.upsert({
+    where: {
+      website_pageSlug: {
+        website: 'bs_plus' as Website,
+        pageSlug: 'kontakt',
+      },
+    },
+    update: {
+      title: 'Kontakt',
+      subtitle: null,
+      description: null,
+      backgroundImage: '/img/kontakt/kontak-bg.webp',
+      overlayColor: 'rgba(0, 0, 0, 0.2)',
+      textColor: 'white',
+    },
+    create: {
+      website: 'bs_plus' as Website,
+      pageSlug: 'kontakt',
+      title: 'Kontakt',
+      subtitle: null,
+      description: null,
+      backgroundImage: '/img/kontakt/kontak-bg.webp',
+      overlayColor: 'rgba(0, 0, 0, 0.2)',
+      textColor: 'white',
+    },
+  })
+  console.log('  ✓ Created PageHeader: BS Plus Kontakt')
+
+  // iPower Kontakt PageHeader
+  await prisma.pageHeader.upsert({
+    where: {
+      website_pageSlug: {
+        website: 'ipower' as Website,
+        pageSlug: 'kontakt',
+      },
+    },
+    update: {
+      title: 'Kontakt',
+      subtitle: null,
+      description: null,
+      backgroundImage: '/img/kontak-bg.jpg',
+      overlayColor: 'rgba(0, 0, 0, 0.2)',
+      textColor: 'white',
+    },
+    create: {
+      website: 'ipower' as Website,
+      pageSlug: 'kontakt',
+      title: 'Kontakt',
+      subtitle: null,
+      description: null,
+      backgroundImage: '/img/kontak-bg.jpg',
+      overlayColor: 'rgba(0, 0, 0, 0.2)',
+      textColor: 'white',
+    },
+  })
+  console.log('  ✓ Created PageHeader: iPower Kontakt')
+
   console.log('Pages seeded successfully!')
 }
 

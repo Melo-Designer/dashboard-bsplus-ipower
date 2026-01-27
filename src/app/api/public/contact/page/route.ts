@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Website } from '@/generated/prisma'
 
-// Public keys that can be accessed without authentication
-const PUBLIC_SETTING_KEYS = [
-  'company_name',
-  'company_tagline',
-  'company_description',
+// Settings keys for contact page content
+const CONTACT_PAGE_SETTINGS = [
+  'contact_form_title',
+  'contact_form_description',
+  'contact_cta_title',
+  'contact_cta_description',
+  'contact_cta_image',
+  'google_maps_embed',
   'contact_email',
   'contact_phone',
   'contact_fax',
@@ -14,24 +17,12 @@ const PUBLIC_SETTING_KEYS = [
   'address_zip',
   'address_city',
   'address_country',
-  'social_facebook',
-  'social_instagram',
-  'social_linkedin',
-  'social_youtube',
-  'social_xing',
-  'google_maps_embed',
   'opening_hours',
-  // Contact page content
-  'contact_form_title',
-  'contact_form_description',
-  'contact_cta_title',
-  'contact_cta_description',
-  'contact_cta_image',
 ]
 
 /**
- * GET /api/public/settings
- * Public endpoint to retrieve settings for frontend websites
+ * GET /api/public/contact/page
+ * Public endpoint to fetch contact page content (header + settings)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -45,10 +36,29 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Fetch page header for "kontakt"
+    const header = await prisma.pageHeader.findUnique({
+      where: {
+        website_pageSlug: {
+          website,
+          pageSlug: 'kontakt',
+        },
+      },
+      select: {
+        title: true,
+        subtitle: true,
+        description: true,
+        backgroundImage: true,
+        overlayColor: true,
+        textColor: true,
+      },
+    })
+
+    // Fetch contact page settings
     const settings = await prisma.setting.findMany({
       where: {
         website,
-        key: { in: PUBLIC_SETTING_KEYS },
+        key: { in: CONTACT_PAGE_SETTINGS },
       },
     })
 
@@ -60,9 +70,11 @@ export async function GET(request: NextRequest) {
       {} as Record<string, string>
     )
 
-    // Set cache headers for performance
     return NextResponse.json(
-      { settings: settingsObject },
+      {
+        header: header || null,
+        settings: settingsObject,
+      },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
@@ -70,9 +82,9 @@ export async function GET(request: NextRequest) {
       }
     )
   } catch (error) {
-    console.error('Get public settings error:', error)
+    console.error('Get contact page error:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Laden der Einstellungen' },
+      { error: 'Fehler beim Laden der Kontaktseite' },
       { status: 500 }
     )
   }
