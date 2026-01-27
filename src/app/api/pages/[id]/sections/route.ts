@@ -108,6 +108,20 @@ export async function POST(
 
     const validated = sectionSchema.parse(body)
 
+    // Singleton section types (only one allowed per page)
+    const singletonTypes = ['triple', 'black_cta', 'numbers', 'hero', 'accordion']
+    if (singletonTypes.includes(validated.type)) {
+      const existing = await prisma.pageSection.findFirst({
+        where: { pageId, type: validated.type as SectionType },
+      })
+      if (existing) {
+        return NextResponse.json(
+          { error: `Ein ${validated.type} Abschnitt existiert bereits auf dieser Seite` },
+          { status: 400 }
+        )
+      }
+    }
+
     // Get max sortOrder
     const maxOrder = await prisma.pageSection.aggregate({
       where: { pageId },
