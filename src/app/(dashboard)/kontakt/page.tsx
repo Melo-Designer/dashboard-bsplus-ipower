@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Metadata } from 'next'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { useWebsite } from '@/components/dashboard/WebsiteSelector'
 import { Button } from '@/components/ui/Button'
@@ -20,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select'
+import { Switch } from '@/components/ui/Switch'
 
 interface PageHeader {
   id?: string
@@ -34,6 +34,7 @@ interface PageHeader {
 interface ContactSettings {
   contact_form_title: string
   contact_form_description: string
+  contact_cta_active: boolean
   contact_cta_title: string
   contact_cta_description: string
   contact_cta_image: string
@@ -60,6 +61,7 @@ export default function ContactPage() {
   const [settings, setSettings] = useState<ContactSettings>({
     contact_form_title: '',
     contact_form_description: '',
+    contact_cta_active: true,
     contact_cta_title: '',
     contact_cta_description: '',
     contact_cta_image: '',
@@ -97,6 +99,7 @@ export default function ContactPage() {
           setSettings({
             contact_form_title: s.contact_form_title || '',
             contact_form_description: s.contact_form_description || '',
+            contact_cta_active: s.contact_cta_active !== 'false',
             contact_cta_title: s.contact_cta_title || '',
             contact_cta_description: s.contact_cta_description || '',
             contact_cta_image: s.contact_cta_image || '',
@@ -155,6 +158,7 @@ export default function ContactPage() {
           settings: {
             contact_form_title: settings.contact_form_title,
             contact_form_description: settings.contact_form_description,
+            contact_cta_active: settings.contact_cta_active ? 'true' : 'false',
             contact_cta_title: settings.contact_cta_title,
             contact_cta_description: settings.contact_cta_description,
             contact_cta_image: settings.contact_cta_image,
@@ -387,11 +391,19 @@ export default function ContactPage() {
           <div className="rounded-xl bg-light-grey overflow-hidden shadow-sm">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-white/50">
-              <div>
-                <h2 className="font-bold text-text-color">CTA-Bereich (optional)</h2>
-                <p className="text-sm text-text-color/60">
-                  Schwarzer Abschnitt am Ende der Seite
-                </p>
+              <div className="flex items-center gap-4">
+                <Switch
+                  checked={settings.contact_cta_active}
+                  onCheckedChange={(checked) =>
+                    setSettings((prev) => ({ ...prev, contact_cta_active: checked }))
+                  }
+                />
+                <div>
+                  <h2 className="font-bold text-text-color">CTA-Bereich</h2>
+                  <p className="text-sm text-text-color/60">
+                    Schwarzer Abschnitt am Ende der Seite
+                  </p>
+                </div>
               </div>
               <Button
                 variant="secondary"

@@ -6,6 +6,7 @@ import { Website } from '@/generated/prisma'
 const CONTACT_PAGE_SETTINGS = [
   'contact_form_title',
   'contact_form_description',
+  'contact_cta_active',
   'contact_cta_title',
   'contact_cta_description',
   'contact_cta_image',
