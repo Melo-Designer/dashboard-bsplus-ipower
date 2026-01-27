@@ -17,13 +17,6 @@ import {
   TabsTrigger,
 } from '@/components/ui/Tabs'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/Dialog'
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -78,55 +71,16 @@ function TabSaveButton({
   )
 }
 
-// Item Card Component for displaying editable items
-function ItemCard({
-  children,
-  onEdit,
-  onDelete,
-}: {
-  children: React.ReactNode
-  onEdit: () => void
-  onDelete: () => void
-}) {
-  return (
-    <div className="bg-white rounded-xl p-4 border-l-4 border-secondary shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">{children}</div>
-        <div className="flex gap-1">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="p-2 rounded-full text-text-color/50 hover:text-secondary hover:bg-light-grey"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="p-2 rounded-full text-text-color/50 hover:text-red-600 hover:bg-red-50"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Sortable Text+Image Card - Same layout as homepage sections (1/3 image + 2/3 content)
+// Sortable Text+Image Card - Inline editor (1/3 image + 2/3 content)
 function SortableTextImageCard({
   section,
-  onEdit,
+  onUpdate,
   onDelete,
   onToggleActive,
   onOpenMediaModal,
 }: {
   section: ParsedPageSection
-  onEdit: () => void
+  onUpdate: (updates: Partial<ParsedPageSection>) => void
   onDelete: () => void
   onToggleActive: () => void
   onOpenMediaModal: () => void
@@ -147,6 +101,71 @@ function SortableTextImageCard({
     opacity: isDragging ? 0.8 : 1,
   }
 
+  const [localData, setLocalData] = useState<{
+    title: string
+    content: string
+    imageAlt: string
+    imageAlign: 'left' | 'right'
+    buttons: ButtonItem[]
+  }>({
+    title: section.title || '',
+    content: section.content || '',
+    imageAlt: section.imageAlt || '',
+    imageAlign: (section.imageAlign as 'left' | 'right') || 'left',
+    buttons: section.buttons || [],
+  })
+  const [isSaving, setIsSaving] = useState(false)
+
+  // Sync local data when section changes
+  useEffect(() => {
+    setLocalData({
+      title: section.title || '',
+      content: section.content || '',
+      imageAlt: section.imageAlt || '',
+      imageAlign: (section.imageAlign as 'left' | 'right') || 'left',
+      buttons: section.buttons || [],
+    })
+  }, [section])
+
+  // Check if there are unsaved changes
+  const hasChanges =
+    localData.title !== (section.title || '') ||
+    localData.content !== (section.content || '') ||
+    localData.imageAlt !== (section.imageAlt || '') ||
+    localData.imageAlign !== (section.imageAlign || 'left')
+
+  const handleSave = async () => {
+    setIsSaving(true)
+    await onUpdate(localData)
+    setIsSaving(false)
+    toast.success('Änderungen gespeichert')
+  }
+
+  const handleAddButton = () => {
+    const newButton: ButtonItem = { text: 'Mehr erfahren', link: '/kontakt', type: 'internal', btnClass: 'primary' }
+    const newButtons = [...localData.buttons, newButton]
+    setLocalData((prev) => ({ ...prev, buttons: newButtons }))
+    onUpdate({ buttons: newButtons })
+  }
+
+  const handleRemoveButton = (index: number) => {
+    const newButtons = localData.buttons.filter((_, i) => i !== index)
+    setLocalData((prev) => ({ ...prev, buttons: newButtons }))
+    onUpdate({ buttons: newButtons })
+  }
+
+  const handleButtonChange = (index: number, field: keyof ButtonItem, value: string) => {
+    const newButtons = localData.buttons.map((btn, i) =>
+      i === index ? { ...btn, [field]: value } : btn
+    )
+    setLocalData((prev) => ({ ...prev, buttons: newButtons }))
+  }
+
+  const handleButtonsSave = () => {
+    onUpdate({ buttons: localData.buttons })
+    toast.success('Buttons gespeichert')
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -165,24 +184,13 @@ function SortableTextImageCard({
           </svg>
         </button>
 
-        <Badge variant="outline" className="text-xs">
-          Bild {section.imageAlign === 'left' ? 'links' : 'rechts'}
-        </Badge>
-
-        <div className="flex-1" />
+        <span className="text-sm font-medium text-text-color/70 truncate flex-1">
+          {section.title || 'Ohne Titel'}
+        </span>
 
         <div className="flex items-center gap-3">
           <span className="text-xs text-text-color/50">Aktiv</span>
           <Switch checked={section.active} onCheckedChange={onToggleActive} />
-          <button
-            type="button"
-            onClick={onEdit}
-            className="p-2 text-text-color/40 hover:text-secondary"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-            </svg>
-          </button>
           <button
             type="button"
             onClick={onDelete}
@@ -200,13 +208,13 @@ function SortableTextImageCard({
         {/* Left: Image (1/3) */}
         <div
           onClick={onOpenMediaModal}
-          className="w-full md:w-1/3 min-h-[200px] md:min-h-[280px] relative cursor-pointer group bg-text-color/10"
+          className="w-full md:w-1/3 min-h-[200px] md:min-h-[350px] relative cursor-pointer group bg-text-color/10"
         >
           {section.imageUrl ? (
             <>
               <Image
                 src={getImageUrl(section.imageUrl)}
-                alt={section.imageAlt || section.title || ''}
+                alt={localData.imageAlt || localData.title || ''}
                 fill
                 className="object-cover"
               />
@@ -225,337 +233,141 @@ function SortableTextImageCard({
         </div>
 
         {/* Right: Content (2/3) */}
-        <div className="w-full md:w-2/3 p-5 space-y-3">
+        <div className="w-full md:w-2/3 p-5 space-y-4">
+          {/* Title */}
           <div>
             <Label className="text-xs text-text-color/50">Titel</Label>
-            <p className="font-medium text-text-color mt-1">
-              {section.title || 'Ohne Titel'}
-            </p>
+            <Input
+              value={localData.title}
+              onChange={(e) => setLocalData((prev) => ({ ...prev, title: e.target.value }))}
+              className="mt-1"
+              placeholder="z.B. Machbarkeit & Auslegung"
+            />
           </div>
 
-          {section.content && (
-            <div>
-              <Label className="text-xs text-text-color/50">Inhalt</Label>
-              <p className="text-sm text-text-color/70 mt-1 line-clamp-4">
-                {section.content.replace(/<[^>]*>/g, '')}
-              </p>
-            </div>
-          )}
+          {/* Content */}
+          <div>
+            <Label className="text-xs text-text-color/50">Inhalt (HTML erlaubt)</Label>
+            <Textarea
+              value={localData.content}
+              onChange={(e) => setLocalData((prev) => ({ ...prev, content: e.target.value }))}
+              rows={4}
+              className="mt-1"
+              placeholder="Beschreibungstext... (HTML wie <br />, <a href> erlaubt)"
+            />
+          </div>
 
-          {section.buttons && section.buttons.length > 0 && (
+          {/* Image Alt & Align */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs text-text-color/50">Buttons</Label>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {section.buttons.map((btn, i) => (
-                  <Badge key={i} variant="secondary" className="text-xs">
-                    {btn.text}
-                  </Badge>
+              <Label className="text-xs text-text-color/50">Bild Alt-Text</Label>
+              <Input
+                value={localData.imageAlt}
+                onChange={(e) => setLocalData((prev) => ({ ...prev, imageAlt: e.target.value }))}
+                className="mt-1"
+                placeholder="Beschreibung des Bildes"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-text-color/50">Bild-Ausrichtung</Label>
+              <Select
+                value={localData.imageAlign}
+                onValueChange={(v) => setLocalData((prev) => ({ ...prev, imageAlign: v as 'left' | 'right' }))}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="left">Bild links</SelectItem>
+                  <SelectItem value="right">Bild rechts</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-xs text-text-color/50">Buttons (optional)</Label>
+              <button
+                type="button"
+                onClick={handleAddButton}
+                className="text-xs text-secondary hover:text-secondary/80 font-medium"
+              >
+                + Button hinzufügen
+              </button>
+            </div>
+            {localData.buttons.length === 0 ? (
+              <p className="text-sm text-text-color/40 py-3 text-center bg-white/50 rounded-lg">
+                Keine Buttons
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {localData.buttons.map((button, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 bg-white/50 rounded-lg">
+                    <Input
+                      value={button.text}
+                      onChange={(e) => handleButtonChange(index, 'text', e.target.value)}
+                      placeholder="Text"
+                      className="flex-1"
+                    />
+                    <Input
+                      value={button.link}
+                      onChange={(e) => handleButtonChange(index, 'link', e.target.value)}
+                      placeholder="/link"
+                      className="flex-1"
+                    />
+                    <Select
+                      value={button.btnClass || 'primary'}
+                      onValueChange={(v) => handleButtonChange(index, 'btnClass', v)}
+                    >
+                      <SelectTrigger className="w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="primary">Primär</SelectItem>
+                        <SelectItem value="secondary">Sekundär</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveButton(index)}
+                      className="p-2 text-text-color/40 hover:text-red-600"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 ))}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleButtonsSave}
+                  className="w-full"
+                >
+                  Buttons speichern
+                </Button>
               </div>
+            )}
+          </div>
+
+          {/* Save Button - only visible when there are changes */}
+          {hasChanges && (
+            <div className="pt-2">
+              <Button
+                variant="secondary"
+                onClick={handleSave}
+                disabled={isSaving}
+                className="w-full sm:w-auto"
+              >
+                {isSaving ? 'Speichern...' : 'Änderungen speichern'}
+              </Button>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
-}
-
-// Text+Image Section Modal
-function TextImageModal({
-  isOpen,
-  onClose,
-  section,
-  onSave,
-  pageId,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  section: ParsedPageSection | null
-  onSave: (section: ParsedPageSection) => void
-  pageId: string
-}) {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [imageAlt, setImageAlt] = useState('')
-  const [imageAlign, setImageAlign] = useState<'left' | 'right'>('left')
-  const [buttons, setButtons] = useState<ButtonItem[]>([])
-  const [mediaModalOpen, setMediaModalOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
-
-  useEffect(() => {
-    if (section) {
-      setTitle(section.title || '')
-      setContent(section.content || '')
-      setImageUrl(section.imageUrl || '')
-      setImageAlt(section.imageAlt || '')
-      setImageAlign((section.imageAlign as 'left' | 'right') || 'left')
-      setButtons(section.buttons || [])
-    } else {
-      setTitle('')
-      setContent('')
-      setImageUrl('')
-      setImageAlt('')
-      setImageAlign('left')
-      setButtons([])
-    }
-  }, [section, isOpen])
-
-  const handleAddButton = () => {
-    setButtons((prev) => [
-      ...prev,
-      { text: 'Mehr erfahren', link: '/kontakt', type: 'internal', btnClass: 'primary' },
-    ])
-  }
-
-  const handleRemoveButton = (index: number) => {
-    setButtons((prev) => prev.filter((_, i) => i !== index))
-  }
-
-  const handleButtonChange = (index: number, field: keyof ButtonItem, value: string) => {
-    setButtons((prev) =>
-      prev.map((btn, i) => (i === index ? { ...btn, [field]: value } : btn))
-    )
-  }
-
-  const handleSave = async () => {
-    if (!title.trim()) {
-      toast.error('Bitte geben Sie einen Titel ein')
-      return
-    }
-
-    setSaving(true)
-    try {
-      const sectionData = {
-        type: 'text_image',
-        title: title || null,
-        content: content || null,
-        imageUrl: imageUrl || null,
-        imageAlt: imageAlt || null,
-        imageAlign,
-        buttons,
-        backgroundColor: 'light',
-        textColor: 'dark',
-      }
-
-      if (section) {
-        // Update existing
-        const res = await fetch(`/api/pages/${pageId}/sections/${section.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sectionData),
-        })
-        if (!res.ok) throw new Error()
-        const updated = await res.json()
-        onSave(updated)
-        toast.success('Abschnitt gespeichert')
-      } else {
-        // Create new
-        const res = await fetch(`/api/pages/${pageId}/sections`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(sectionData),
-        })
-        if (!res.ok) throw new Error()
-        const created = await res.json()
-        onSave(created)
-        toast.success('Abschnitt erstellt')
-      }
-      onClose()
-    } catch {
-      toast.error('Fehler beim Speichern')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <>
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {section ? 'Text + Bild bearbeiten' : 'Neuer Text + Bild Abschnitt'}
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-6 py-4">
-            {/* Title */}
-            <div>
-              <Label htmlFor="ti-title">Titel</Label>
-              <Input
-                id="ti-title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="z.B. Machbarkeit & Auslegung"
-                className="mt-1"
-              />
-            </div>
-
-            {/* Content */}
-            <div>
-              <Label htmlFor="ti-content">Inhalt (HTML erlaubt)</Label>
-              <Textarea
-                id="ti-content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="Beschreibungstext... (HTML wie <br />, <a href> erlaubt)"
-                rows={6}
-                className="mt-1"
-              />
-            </div>
-
-            {/* Image */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label>Bild</Label>
-                <div
-                  onClick={() => setMediaModalOpen(true)}
-                  className="mt-1 relative h-40 rounded-lg bg-light-grey cursor-pointer group overflow-hidden"
-                >
-                  {imageUrl ? (
-                    <>
-                      <Image
-                        src={getImageUrl(imageUrl)}
-                        alt={imageAlt || 'Bild'}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">Ändern</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-text-color/40 group-hover:text-text-color/60">
-                      <span className="text-sm">Bild auswählen</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="ti-imageAlt">Bild Alt-Text</Label>
-                  <Input
-                    id="ti-imageAlt"
-                    value={imageAlt}
-                    onChange={(e) => setImageAlt(e.target.value)}
-                    placeholder="Beschreibung des Bildes"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label>Bild-Ausrichtung</Label>
-                  <Select value={imageAlign} onValueChange={(v) => setImageAlign(v as 'left' | 'right')}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="left">Bild links</SelectItem>
-                      <SelectItem value="right">Bild rechts</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label>Buttons (optional)</Label>
-                <button
-                  type="button"
-                  onClick={handleAddButton}
-                  className="text-xs text-secondary hover:text-secondary/80 font-medium"
-                >
-                  + Button hinzufügen
-                </button>
-              </div>
-              {buttons.length === 0 ? (
-                <p className="text-sm text-text-color/40 py-4 text-center bg-light-grey rounded-lg">
-                  Keine Buttons
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {buttons.map((button, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-light-grey rounded-lg">
-                      <div className="flex-1 grid grid-cols-2 gap-2">
-                        <Input
-                          value={button.text}
-                          onChange={(e) => handleButtonChange(index, 'text', e.target.value)}
-                          placeholder="Button-Text"
-                        />
-                        <Input
-                          value={button.link}
-                          onChange={(e) => handleButtonChange(index, 'link', e.target.value)}
-                          placeholder="/link"
-                        />
-                        <Select
-                          value={button.type || 'internal'}
-                          onValueChange={(v) => handleButtonChange(index, 'type', v)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="internal">Intern</SelectItem>
-                            <SelectItem value="external">Extern</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Select
-                          value={button.btnClass || 'primary'}
-                          onValueChange={(v) => handleButtonChange(index, 'btnClass', v)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="primary">Primär</SelectItem>
-                            <SelectItem value="secondary">Sekundär</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveButton(index)}
-                        className="p-2 text-text-color/40 hover:text-red-600"
-                      >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onClose}
-              className="bg-transparent border border-text-color/20 text-text-color hover:bg-light-grey"
-            >
-              Abbrechen
-            </Button>
-            <Button type="button" variant="secondary" onClick={handleSave} disabled={saving}>
-              {saving ? 'Speichern...' : section ? 'Speichern' : 'Erstellen'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <MediaSelectorModal
-        isOpen={mediaModalOpen}
-        onClose={() => setMediaModalOpen(false)}
-        onSelect={(media) => {
-          const selectedMedia = Array.isArray(media) ? media[0] : media
-          setImageUrl(selectedMedia.url)
-        }}
-        title="Bild auswählen"
-      />
-    </>
   )
 }
 
@@ -568,11 +380,6 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
   const [activeTab, setActiveTab] = useState('allgemein')
   const [mediaModalOpen, setMediaModalOpen] = useState(false)
 
-  // Text+Image modal state
-  const [textImageModal, setTextImageModal] = useState<{
-    open: boolean
-    section: ParsedPageSection | null
-  }>({ open: false, section: null })
 
   // Text+Image media modal state (for inline image editing)
   const [editingTextImageId, setEditingTextImageId] = useState<string | null>(null)
@@ -843,19 +650,6 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     }
   }
 
-  // Handle text+image save (update or create)
-  const handleTextImageSave = (savedSection: ParsedPageSection) => {
-    setTextImageSections((prev) => {
-      const existingIndex = prev.findIndex((s) => s.id === savedSection.id)
-      if (existingIndex >= 0) {
-        const updated = [...prev]
-        updated[existingIndex] = savedSection
-        return updated
-      }
-      return [...prev, savedSection]
-    })
-  }
-
   // Toggle text+image section active state
   const toggleTextImageActive = async (section: ParsedPageSection) => {
     try {
@@ -870,6 +664,47 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
       toast.success(section.active ? 'Abschnitt deaktiviert' : 'Abschnitt aktiviert')
     } catch {
       toast.error('Fehler beim Aktualisieren')
+    }
+  }
+
+  // Create new text+image section
+  const createTextImageSection = async () => {
+    try {
+      const res = await fetch(`/api/pages/${id}/sections`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'text_image',
+          title: 'Neuer Abschnitt',
+          content: '',
+          imageAlign: 'left',
+          active: true,
+        }),
+      })
+      if (!res.ok) throw new Error()
+      const created: ParsedPageSection = await res.json()
+      setTextImageSections((prev) => [...prev, created])
+      toast.success('Abschnitt erstellt')
+    } catch {
+      toast.error('Fehler beim Erstellen')
+    }
+  }
+
+  // Update text+image section
+  const updateTextImageSection = async (sectionId: string, updates: Partial<ParsedPageSection>) => {
+    try {
+      const res = await fetch(`/api/pages/${id}/sections/${sectionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      if (!res.ok) throw new Error()
+      const updated: ParsedPageSection = await res.json()
+      setTextImageSections((prev) =>
+        prev.map((s) => (s.id === sectionId ? updated : s))
+      )
+    } catch {
+      toast.error('Fehler beim Speichern')
     }
   }
 
@@ -1205,7 +1040,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => setTextImageModal({ open: true, section: null })}
+                onClick={createTextImageSection}
               >
                 + Hinzufügen
               </Button>
@@ -1217,7 +1052,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={() => setTextImageModal({ open: true, section: null })}
+                  onClick={createTextImageSection}
                 >
                   Ersten Abschnitt erstellen
                 </Button>
@@ -1237,7 +1072,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                       <SortableTextImageCard
                         key={section.id}
                         section={section}
-                        onEdit={() => setTextImageModal({ open: true, section })}
+                        onUpdate={(updates) => updateTextImageSection(section.id, updates)}
                         onDelete={() => deleteTextImageSection(section.id)}
                         onToggleActive={() => toggleTextImageActive(section)}
                         onOpenMediaModal={() => setEditingTextImageId(section.id)}
@@ -1383,15 +1218,6 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
           setFormData((prev) => ({ ...prev, heroImage: selectedMedia.url }))
         }}
         title="Hero-Bild auswählen"
-      />
-
-      {/* Text+Image Modal */}
-      <TextImageModal
-        isOpen={textImageModal.open}
-        onClose={() => setTextImageModal({ open: false, section: null })}
-        section={textImageModal.section}
-        onSave={handleTextImageSave}
-        pageId={id}
       />
 
       {/* Media Selector Modal for Text+Image Sections */}
