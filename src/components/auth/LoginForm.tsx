@@ -38,7 +38,7 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
         return
       }
 
-      router.push(callbackUrl || '/dashboard')
+      router.push(callbackUrl || '/')
       router.refresh()
     } catch {
       setError('Ein Fehler ist aufgetreten')
@@ -64,7 +64,7 @@ export function LoginForm({ error: initialError, callbackUrl }: LoginFormProps) 
         return
       }
 
-      router.push(callbackUrl || '/dashboard')
+      router.push(callbackUrl || '/')
       router.refresh()
     } catch {
       setError('Ein Fehler ist aufgetreten')
