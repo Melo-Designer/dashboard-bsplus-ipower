@@ -49,3 +49,4 @@ next-env.d.ts
 # Uploads (generated)
 public/uploads/*
 !public/uploads/.gitkeep
+CLAUDE.md
