@@ -3,25 +3,21 @@ export const PAGE_HEADERS = [
     slug: 'kontakt',
     label: 'Kontakt',
     defaultTitle: 'Kontakt',
-    defaultSubtitle: 'Wir freuen uns auf Ihre Nachricht',
   },
   {
     slug: 'ueber-uns',
     label: 'Über uns',
     defaultTitle: 'Über uns',
-    defaultSubtitle: 'Lernen Sie uns kennen',
   },
   {
     slug: 'karriere',
     label: 'Karriere',
     defaultTitle: 'Karriere',
-    defaultSubtitle: 'Werden Sie Teil unseres Teams',
   },
   {
     slug: 'journal',
     label: 'Journal / Blog',
     defaultTitle: 'Journal',
-    defaultSubtitle: 'Neuigkeiten und Einblicke',
   },
 ] as const
 

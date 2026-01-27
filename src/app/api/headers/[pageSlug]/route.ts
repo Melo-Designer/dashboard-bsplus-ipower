@@ -7,7 +7,6 @@ import { z } from 'zod'
 const headerUpdateSchema = z.object({
   website: z.enum(['bs_plus', 'ipower']),
   title: z.string().min(1, 'Titel ist erforderlich'),
-  subtitle: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   backgroundImage: z.string().optional().nullable(),
   overlayColor: z.string().optional().nullable(),
@@ -78,7 +77,6 @@ export async function PUT(
       },
       update: {
         title: validated.title,
-        subtitle: validated.subtitle,
         description: validated.description,
         backgroundImage: validated.backgroundImage,
         overlayColor: validated.overlayColor,
@@ -88,7 +86,6 @@ export async function PUT(
         website: validated.website,
         pageSlug,
         title: validated.title,
-        subtitle: validated.subtitle,
         description: validated.description,
         backgroundImage: validated.backgroundImage,
         overlayColor: validated.overlayColor,

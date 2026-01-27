@@ -221,7 +221,6 @@ export async function seedPages() {
     },
     update: {
       title: 'Kontakt',
-      subtitle: null,
       description: null,
       backgroundImage: '/img/kontakt/kontak-bg.webp',
       overlayColor: 'rgba(0, 0, 0, 0.2)',
@@ -231,7 +230,6 @@ export async function seedPages() {
       website: 'bs_plus' as Website,
       pageSlug: 'kontakt',
       title: 'Kontakt',
-      subtitle: null,
       description: null,
       backgroundImage: '/img/kontakt/kontak-bg.webp',
       overlayColor: 'rgba(0, 0, 0, 0.2)',
@@ -250,7 +248,6 @@ export async function seedPages() {
     },
     update: {
       title: 'Kontakt',
-      subtitle: null,
       description: null,
       backgroundImage: '/img/kontak-bg.jpg',
       overlayColor: 'rgba(0, 0, 0, 0.2)',
@@ -260,7 +257,6 @@ export async function seedPages() {
       website: 'ipower' as Website,
       pageSlug: 'kontakt',
       title: 'Kontakt',
-      subtitle: null,
       description: null,
       backgroundImage: '/img/kontak-bg.jpg',
       overlayColor: 'rgba(0, 0, 0, 0.2)',

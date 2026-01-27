@@ -393,7 +393,6 @@ model PageHeader {
   pageSlug    String   // e.g., "kontakt", "ueber-uns", "karriere"
 
   title       String
-  subtitle    String?
   description String?  @db.Text
 
   backgroundImage String?

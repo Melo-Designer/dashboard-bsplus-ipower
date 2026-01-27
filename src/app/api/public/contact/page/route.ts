@@ -47,7 +47,6 @@ export async function GET(request: NextRequest) {
       },
       select: {
         title: true,
-        subtitle: true,
         description: true,
         backgroundImage: true,
         overlayColor: true,

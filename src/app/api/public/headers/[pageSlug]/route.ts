@@ -24,7 +24,6 @@ export async function GET(
       },
       select: {
         title: true,
-        subtitle: true,
         description: true,
         backgroundImage: true,
         overlayColor: true,

@@ -30,7 +30,6 @@ interface PageHeader {
   id?: string
   pageSlug: string
   title: string
-  subtitle: string | null
   description: string | null
   backgroundImage: string | null
   overlayColor: string | null
@@ -48,7 +47,6 @@ export function HeadersManagement() {
   const [formData, setFormData] = useState<PageHeader>({
     pageSlug: '',
     title: '',
-    subtitle: '',
     description: '',
     backgroundImage: '',
     overlayColor: '',
@@ -81,7 +79,6 @@ export function HeadersManagement() {
       setFormData({
         pageSlug: slug,
         title: existing.title,
-        subtitle: existing.subtitle || '',
         description: existing.description || '',
         backgroundImage: existing.backgroundImage || '',
         overlayColor: existing.overlayColor || '',
@@ -91,7 +88,6 @@ export function HeadersManagement() {
       setFormData({
         pageSlug: slug,
         title: pageConfig?.defaultTitle || '',
-        subtitle: pageConfig?.defaultSubtitle || '',
         description: '',
         backgroundImage: '',
         overlayColor: '',
@@ -115,7 +111,6 @@ export function HeadersManagement() {
         body: JSON.stringify({
           website,
           title: formData.title,
-          subtitle: formData.subtitle || null,
           description: formData.description || null,
           backgroundImage: formData.backgroundImage || null,
           overlayColor: formData.overlayColor || null,
@@ -170,7 +165,7 @@ export function HeadersManagement() {
               <h3 className="font-medium text-text-color">{page.label}</h3>
               <p className="text-sm text-text-color/60">
                 {header?.title || page.defaultTitle}
-                {header?.subtitle && ` - ${header.subtitle}`}
+                {header?.description && ` - ${header.description}`}
               </p>
             </div>
             <Button
@@ -202,17 +197,6 @@ export function HeadersManagement() {
                 value={formData.title}
                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                 placeholder="Seitentitel"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="header-subtitle">Untertitel</Label>
-              <Input
-                id="header-subtitle"
-                value={formData.subtitle || ''}
-                onChange={(e) => setFormData((prev) => ({ ...prev, subtitle: e.target.value }))}
-                placeholder="Untertitel"
                 className="mt-1"
               />
             </div>
