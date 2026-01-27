@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Website } from '@/generated/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 
 /**
  * GET /api/settings
@@ -90,6 +91,12 @@ export async function PUT(request: NextRequest) {
     )
 
     await Promise.all(updates)
+
+    // Trigger revalidation if contact-related settings were updated
+    const contactKeys = Object.keys(settings).filter((key) => key.startsWith('contact_'))
+    if (contactKeys.length > 0) {
+      revalidateFrontend(website as 'bs_plus' | 'ipower', { tag: 'contact-page' })
+    }
 
     return NextResponse.json({
       success: true,

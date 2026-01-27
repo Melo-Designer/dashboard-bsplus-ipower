@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { z } from 'zod'
 
 const headerUpdateSchema = z.object({
@@ -94,6 +95,11 @@ export async function PUT(
         textColor: validated.textColor,
       },
     })
+
+    // Trigger revalidation for the page
+    if (pageSlug === 'kontakt') {
+      revalidateFrontend(validated.website, { tag: 'contact-page' })
+    }
 
     return NextResponse.json(header)
   } catch (error) {

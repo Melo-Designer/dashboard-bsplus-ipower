@@ -6,7 +6,7 @@
  */
 
 type Website = 'bs_plus' | 'ipower'
-type RevalidateTag = 'slides' | 'sections' | 'homepage' | 'pages'
+type RevalidateTag = 'slides' | 'sections' | 'homepage' | 'pages' | 'contact-page'
 
 interface RevalidateOptions {
   tag?: RevalidateTag
