@@ -24,7 +24,6 @@ import { Switch } from '@/components/ui/Switch'
 interface PageHeader {
   id?: string
   title: string
-  subtitle: string | null
   description: string | null
   backgroundImage: string | null
   overlayColor: string | null
@@ -38,6 +37,9 @@ interface ContactSettings {
   contact_cta_title: string
   contact_cta_description: string
   contact_cta_image: string
+  contact_cta_button_text: string
+  contact_cta_button_link: string
+  contact_cta_button_style: string
   google_maps_embed: string
 }
 
@@ -49,7 +51,6 @@ export default function ContactPage() {
   // Hero state
   const [header, setHeader] = useState<PageHeader>({
     title: 'Kontakt',
-    subtitle: null,
     description: null,
     backgroundImage: null,
     overlayColor: null,
@@ -65,6 +66,9 @@ export default function ContactPage() {
     contact_cta_title: '',
     contact_cta_description: '',
     contact_cta_image: '',
+    contact_cta_button_text: '',
+    contact_cta_button_link: '',
+    contact_cta_button_style: 'secondary',
     google_maps_embed: '',
   })
   const [ctaMediaModalOpen, setCtaMediaModalOpen] = useState(false)
@@ -82,7 +86,6 @@ export default function ContactPage() {
           if (headerData) {
             setHeader({
               title: headerData.title || 'Kontakt',
-              subtitle: headerData.subtitle,
               description: headerData.description,
               backgroundImage: headerData.backgroundImage,
               overlayColor: headerData.overlayColor,
@@ -103,6 +106,9 @@ export default function ContactPage() {
             contact_cta_title: s.contact_cta_title || '',
             contact_cta_description: s.contact_cta_description || '',
             contact_cta_image: s.contact_cta_image || '',
+            contact_cta_button_text: s.contact_cta_button_text || '',
+            contact_cta_button_link: s.contact_cta_button_link || '',
+            contact_cta_button_style: s.contact_cta_button_style || 'secondary',
             google_maps_embed: s.google_maps_embed || '',
           })
         }
@@ -130,7 +136,6 @@ export default function ContactPage() {
         body: JSON.stringify({
           website,
           title: header.title,
-          subtitle: header.subtitle || null,
           description: header.description || null,
           backgroundImage: header.backgroundImage || null,
           overlayColor: header.overlayColor || null,
@@ -162,6 +167,9 @@ export default function ContactPage() {
             contact_cta_title: settings.contact_cta_title,
             contact_cta_description: settings.contact_cta_description,
             contact_cta_image: settings.contact_cta_image,
+            contact_cta_button_text: settings.contact_cta_button_text,
+            contact_cta_button_link: settings.contact_cta_button_link,
+            contact_cta_button_style: settings.contact_cta_button_style,
             google_maps_embed: settings.google_maps_embed,
           },
         }),
@@ -257,18 +265,6 @@ export default function ContactPage() {
                       setHeader((prev) => ({ ...prev, title: e.target.value }))
                     }
                     placeholder="Kontakt"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs text-text-color/50">Untertitel</Label>
-                  <Input
-                    value={header.subtitle || ''}
-                    onChange={(e) =>
-                      setHeader((prev) => ({ ...prev, subtitle: e.target.value }))
-                    }
-                    placeholder="Untertitel"
                     className="mt-1"
                   />
                 </div>
@@ -471,6 +467,49 @@ export default function ContactPage() {
                     rows={5}
                     className="mt-1"
                   />
+                </div>
+
+                {/* Button fields */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-xs text-text-color/50">Button Text</Label>
+                    <Input
+                      value={settings.contact_cta_button_text}
+                      onChange={(e) =>
+                        setSettings((prev) => ({ ...prev, contact_cta_button_text: e.target.value }))
+                      }
+                      placeholder="z.B. Jetzt anfragen"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-text-color/50">Button Link</Label>
+                    <Input
+                      value={settings.contact_cta_button_link}
+                      onChange={(e) =>
+                        setSettings((prev) => ({ ...prev, contact_cta_button_link: e.target.value }))
+                      }
+                      placeholder="z.B. /kontakt oder https://..."
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-text-color/50">Button Stil</Label>
+                    <Select
+                      value={settings.contact_cta_button_style}
+                      onValueChange={(value) =>
+                        setSettings((prev) => ({ ...prev, contact_cta_button_style: value }))
+                      }
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="primary">Primär</SelectItem>
+                        <SelectItem value="secondary">Sekundär</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {settings.contact_cta_image && (
