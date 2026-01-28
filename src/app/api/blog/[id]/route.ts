@@ -11,7 +11,6 @@ const blogPostUpdateSchema = z.object({
   featuredImage: z.string().optional().nullable(),
   author: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
-  tagIds: z.array(z.string()).optional(),
   published: z.boolean().optional(),
   publishedAt: z.string().optional().nullable(),
   metaTitle: z.string().optional().nullable(),
@@ -30,9 +29,6 @@ export async function GET(
       where: { id },
       include: {
         category: {
-          select: { id: true, name: true, slug: true },
-        },
-        tags: {
           select: { id: true, name: true, slug: true },
         },
       },
@@ -62,9 +58,8 @@ export async function PUT(
 
     const { id } = await params
     const body = await request.json()
-    const { tagIds, ...data } = body
 
-    const validated = blogPostUpdateSchema.parse(data)
+    const validated = blogPostUpdateSchema.parse(body)
 
     // Check if post exists
     const existing = await prisma.blogPost.findUnique({
@@ -95,19 +90,11 @@ export async function PUT(
       publishedAt: validated.publishedAt ? new Date(validated.publishedAt) : validated.publishedAt === null ? null : undefined,
     }
 
-    // Handle tags update
-    if (tagIds !== undefined) {
-      updateData.tags = {
-        set: tagIds.map((tagId: string) => ({ id: tagId })),
-      }
-    }
-
     const post = await prisma.blogPost.update({
       where: { id },
       data: updateData,
       include: {
         category: true,
-        tags: true,
       },
     })
 

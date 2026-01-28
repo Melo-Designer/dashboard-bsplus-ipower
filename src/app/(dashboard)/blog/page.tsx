@@ -38,11 +38,6 @@ interface BlogPost {
     name: string
     slug: string
   } | null
-  tags: {
-    id: string
-    name: string
-    slug: string
-  }[]
 }
 
 interface Category {

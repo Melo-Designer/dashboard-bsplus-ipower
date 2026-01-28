@@ -29,12 +29,6 @@ interface Category {
   slug: string
 }
 
-interface Tag {
-  id: string
-  name: string
-  slug: string
-}
-
 export default function EditBlogBeitrag({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
@@ -43,8 +37,6 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [mediaModalOpen, setMediaModalOpen] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
-  const [tags, setTags] = useState<Tag[]>([])
-  const [newTagName, setNewTagName] = useState('')
 
   const [formData, setFormData] = useState({
     title: '',
@@ -54,7 +46,6 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
     featuredImage: '',
     author: '',
     categoryId: '',
-    tagIds: [] as string[],
     published: false,
     publishedAt: '',
     metaTitle: '',
@@ -64,10 +55,9 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [postRes, categoriesRes, tagsRes] = await Promise.all([
+        const [postRes, categoriesRes] = await Promise.all([
           fetch(`/api/blog/${id}`),
           fetch(`/api/blog/categories?website=${website}`),
-          fetch('/api/blog/tags'),
         ])
 
         if (!postRes.ok) {
@@ -78,10 +68,8 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
 
         const post = await postRes.json()
         const categoriesData = await categoriesRes.json()
-        const tagsData = await tagsRes.json()
 
         setCategories(categoriesData.categories || [])
-        setTags(tagsData.tags || [])
 
         setFormData({
           title: post.title || '',
@@ -91,7 +79,6 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
           featuredImage: post.featuredImage || '',
           author: post.author || '',
           categoryId: post.categoryId || '',
-          tagIds: post.tags?.map((t: Tag) => t.id) || [],
           published: post.published || false,
           publishedAt: post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 16) : '',
           metaTitle: post.metaTitle || '',
@@ -124,27 +111,6 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
       ...prev,
       title: value,
     }))
-  }
-
-  const handleAddTag = async () => {
-    if (!newTagName.trim()) return
-    try {
-      const res = await fetch('/api/blog/tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newTagName.trim() }),
-      })
-      const tag = await res.json()
-      if (!tags.find((t) => t.id === tag.id)) {
-        setTags((prev) => [...prev, tag])
-      }
-      if (!formData.tagIds.includes(tag.id)) {
-        setFormData((prev) => ({ ...prev, tagIds: [...prev.tagIds, tag.id] }))
-      }
-      setNewTagName('')
-    } catch {
-      toast.error('Fehler beim Erstellen des Tags')
-    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -368,51 +334,6 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Tags */}
-          <div className="p-6 rounded-xl bg-light-grey space-y-4">
-            <h2 className="font-medium text-text-color">Tags</h2>
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <button
-                  key={tag.id}
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      tagIds: prev.tagIds.includes(tag.id)
-                        ? prev.tagIds.filter((tagId) => tagId !== tag.id)
-                        : [...prev.tagIds, tag.id],
-                    }))
-                  }}
-                  className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                    formData.tagIds.includes(tag.id)
-                      ? 'bg-secondary text-white'
-                      : 'bg-white text-text-color/60 hover:bg-white/80'
-                  }`}
-                >
-                  {tag.name}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                placeholder="Neues Tag..."
-                className="flex-1"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    handleAddTag()
-                  }
-                }}
-              />
-              <Button type="button" variant="secondary" onClick={handleAddTag} className="px-3">
-                +
-              </Button>
-            </div>
           </div>
 
           {/* Author */}

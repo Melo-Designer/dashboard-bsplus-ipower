@@ -22,11 +22,6 @@ interface BlogPost {
     name: string
     slug: string
   } | null
-  tags: {
-    id: string
-    name: string
-    slug: string
-  }[]
 }
 
 interface BlogCardProps {
@@ -134,22 +129,7 @@ export function BlogCard({ post, onTogglePublished, onDelete }: BlogCardProps) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-light-grey">
-          <div className="flex flex-wrap gap-1">
-            {post.tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag.id}
-                className="px-2 py-0.5 text-xs bg-light-grey text-text-color/60 rounded-full"
-              >
-                {tag.name}
-              </span>
-            ))}
-            {post.tags.length > 2 && (
-              <span className="px-2 py-0.5 text-xs bg-light-grey text-text-color/60 rounded-full">
-                +{post.tags.length - 2}
-              </span>
-            )}
-          </div>
+        <div className="flex items-center justify-end mt-4 pt-3 border-t border-light-grey">
           <div className="flex items-center gap-2">
             <span className="text-xs text-text-color/50">Veröffentlicht</span>
             <Switch

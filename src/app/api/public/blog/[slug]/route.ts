@@ -24,9 +24,6 @@ export async function GET(
         category: {
           select: { id: true, name: true, slug: true },
         },
-        tags: {
-          select: { id: true, name: true, slug: true },
-        },
       },
     })
 
@@ -51,7 +48,6 @@ export async function GET(
       metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,
       category: post.category,
-      tags: post.tags,
     })
   } catch (error) {
     console.error('Get public blog post error:', error)

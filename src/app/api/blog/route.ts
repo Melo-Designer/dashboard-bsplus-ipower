@@ -12,7 +12,6 @@ const blogPostSchema = z.object({
   featuredImage: z.string().optional().nullable(),
   author: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
-  tagIds: z.array(z.string()).optional(),
   published: z.boolean().optional(),
   publishedAt: z.string().optional().nullable(),
   metaTitle: z.string().optional().nullable(),
@@ -55,9 +54,6 @@ export async function GET(request: NextRequest) {
         category: {
           select: { id: true, name: true, slug: true },
         },
-        tags: {
-          select: { id: true, name: true, slug: true },
-        },
       },
     })
 
@@ -77,7 +73,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { website, tagIds, ...data } = body
+    const { website, ...data } = body
 
     if (!website || !['bs_plus', 'ipower'].includes(website)) {
       return NextResponse.json({ error: 'Website parameter erforderlich' }, { status: 400 })
@@ -107,13 +103,9 @@ export async function POST(request: NextRequest) {
         publishedAt: validated.publishedAt ? new Date(validated.publishedAt) : null,
         metaTitle: validated.metaTitle,
         metaDescription: validated.metaDescription,
-        tags: tagIds?.length
-          ? { connect: tagIds.map((id: string) => ({ id })) }
-          : undefined,
       },
       include: {
         category: true,
-        tags: true,
       },
     })
 

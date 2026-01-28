@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const website = searchParams.get('website') as Website
     const categorySlug = searchParams.get('category')
-    const tagSlug = searchParams.get('tag')
     const limit = parseInt(searchParams.get('limit') || '10')
     const offset = parseInt(searchParams.get('offset') || '0')
 
@@ -21,7 +20,6 @@ export async function GET(request: NextRequest) {
       published: boolean
       publishedAt?: { lte: Date }
       category?: { slug: string }
-      tags?: { some: { slug: string } }
     } = {
       website,
       published: true,
@@ -30,10 +28,6 @@ export async function GET(request: NextRequest) {
 
     if (categorySlug) {
       where.category = { slug: categorySlug }
-    }
-
-    if (tagSlug) {
-      where.tags = { some: { slug: tagSlug } }
     }
 
     const [posts, total] = await Promise.all([
@@ -51,9 +45,6 @@ export async function GET(request: NextRequest) {
           author: true,
           publishedAt: true,
           category: {
-            select: { id: true, name: true, slug: true },
-          },
-          tags: {
             select: { id: true, name: true, slug: true },
           },
         },
