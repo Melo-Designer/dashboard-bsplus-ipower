@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useWebsite } from '@/components/dashboard/WebsiteSelector'
@@ -21,6 +21,59 @@ import { toast } from 'sonner'
 import Image from 'next/image'
 import { getImageUrl } from '@/lib/utils'
 import { EMPLOYMENT_TYPES, JOB_STATUSES } from '@/lib/constants/employment-types'
+
+// ListEditor component moved outside to prevent re-creation on every render
+function ListEditor({
+  label,
+  field,
+  placeholder,
+  items,
+  onItemChange,
+  onAddItem,
+  onRemoveItem,
+}: {
+  label: string
+  field: string
+  placeholder: string
+  items: string[]
+  onItemChange: (index: number, value: string) => void
+  onAddItem: () => void
+  onRemoveItem: (index: number) => void
+}) {
+  return (
+    <div className="space-y-3">
+      <Label>{label}</Label>
+      {items.map((item, index) => (
+        <div key={`${field}-${index}`} className="flex gap-2">
+          <Input
+            value={item}
+            onChange={(e) => onItemChange(index, e.target.value)}
+            placeholder={placeholder}
+            className="flex-1"
+          />
+          {items.length > 1 && (
+            <button
+              type="button"
+              onClick={() => onRemoveItem(index)}
+              className="p-2 text-text-color/30 hover:text-red-600 transition-colors"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={onAddItem}
+        className="text-sm text-secondary hover:text-secondary/80"
+      >
+        + Punkt hinzufügen
+      </button>
+    </div>
+  )
+}
 
 export default function EditStelle({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -88,26 +141,26 @@ export default function EditStelle({ params }: { params: Promise<{ id: string }>
     if (id) fetchJob()
   }, [id, router])
 
-  const handleListItemChange = (field: 'requirements' | 'benefits' | 'responsibilities', index: number, value: string) => {
+  const handleListItemChange = useCallback((field: 'requirements' | 'benefits' | 'responsibilities', index: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: prev[field].map((item, i) => (i === index ? value : item)),
     }))
-  }
+  }, [])
 
-  const handleAddListItem = (field: 'requirements' | 'benefits' | 'responsibilities') => {
+  const handleAddListItem = useCallback((field: 'requirements' | 'benefits' | 'responsibilities') => {
     setFormData((prev) => ({
       ...prev,
       [field]: [...prev[field], ''],
     }))
-  }
+  }, [])
 
-  const handleRemoveListItem = (field: 'requirements' | 'benefits' | 'responsibilities', index: number) => {
+  const handleRemoveListItem = useCallback((field: 'requirements' | 'benefits' | 'responsibilities', index: number) => {
     setFormData((prev) => ({
       ...prev,
       [field]: prev[field].filter((_, i) => i !== index),
     }))
-  }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -143,48 +196,6 @@ export default function EditStelle({ params }: { params: Promise<{ id: string }>
       setIsSubmitting(false)
     }
   }
-
-  const ListEditor = ({
-    label,
-    field,
-    placeholder,
-  }: {
-    label: string
-    field: 'requirements' | 'benefits' | 'responsibilities'
-    placeholder: string
-  }) => (
-    <div className="space-y-3">
-      <Label>{label}</Label>
-      {formData[field].map((item, index) => (
-        <div key={index} className="flex gap-2">
-          <Input
-            value={item}
-            onChange={(e) => handleListItemChange(field, index, e.target.value)}
-            placeholder={placeholder}
-            className="flex-1"
-          />
-          {formData[field].length > 1 && (
-            <button
-              type="button"
-              onClick={() => handleRemoveListItem(field, index)}
-              className="p-2 text-text-color/30 hover:text-red-600 transition-colors"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() => handleAddListItem(field)}
-        className="text-sm text-secondary hover:text-secondary/80"
-      >
-        + Punkt hinzufügen
-      </button>
-    </div>
-  )
 
   if (isLoading) {
     return (
@@ -287,6 +298,10 @@ export default function EditStelle({ params }: { params: Promise<{ id: string }>
               label="Ihre Aufgaben"
               field="responsibilities"
               placeholder="z.B. Wartung und Instandhaltung von BHKW-Anlagen"
+              items={formData.responsibilities}
+              onItemChange={(index, value) => handleListItemChange('responsibilities', index, value)}
+              onAddItem={() => handleAddListItem('responsibilities')}
+              onRemoveItem={(index) => handleRemoveListItem('responsibilities', index)}
             />
           </div>
 
@@ -296,6 +311,10 @@ export default function EditStelle({ params }: { params: Promise<{ id: string }>
               label="Was Sie mitbringen"
               field="requirements"
               placeholder="z.B. Abgeschlossene Ausbildung im Bereich Elektrotechnik"
+              items={formData.requirements}
+              onItemChange={(index, value) => handleListItemChange('requirements', index, value)}
+              onAddItem={() => handleAddListItem('requirements')}
+              onRemoveItem={(index) => handleRemoveListItem('requirements', index)}
             />
           </div>
 
@@ -305,6 +324,10 @@ export default function EditStelle({ params }: { params: Promise<{ id: string }>
               label="Was wir bieten"
               field="benefits"
               placeholder="z.B. Attraktives Gehalt und Sozialleistungen"
+              items={formData.benefits}
+              onItemChange={(index, value) => handleListItemChange('benefits', index, value)}
+              onAddItem={() => handleAddListItem('benefits')}
+              onRemoveItem={(index) => handleRemoveListItem('benefits', index)}
             />
           </div>
         </div>

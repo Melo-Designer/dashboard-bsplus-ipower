@@ -31,8 +31,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { label: 'Blog', href: '/blog', icon: Newspaper },
-  { label: 'Stellenangebote', href: '/stellenangebote', icon: Briefcase },
+  { label: 'Journal', href: '/blog', icon: Newspaper },
+  { label: 'Stellenangebote', href: '/karriere', icon: Briefcase },
   {
     label: 'Website',
     icon: Globe,
@@ -42,7 +42,7 @@ const navItems: NavItem[] = [
       { label: 'Kontakt', href: '/kontakt', icon: MessageSquare },
     ],
   },
-  { label: 'Bewerbungen', href: '/bewerbungen', icon: Users },
+  { label: 'Bewerbungen', href: '/karriere/bewerbungen', icon: Users },
   { label: 'Nachrichten', href: '/nachrichten', icon: MessageSquare },
   { label: 'Medien', href: '/medien', icon: Image },
   { label: 'Einstellungen', href: '/einstellungen', icon: Settings },
