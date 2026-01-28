@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { z } from 'zod'
 
 const jobUpdateSchema = z.object({
@@ -121,6 +122,9 @@ export async function PUT(
       data: updateData,
     })
 
+    // Revalidate frontend karriere pages
+    revalidateFrontend(job.website as 'bs_plus' | 'ipower', { tag: 'karriere' })
+
     return NextResponse.json({
       ...job,
       requirements: job.requirements ? JSON.parse(job.requirements) : [],
@@ -161,6 +165,9 @@ export async function DELETE(
     await prisma.jobListing.delete({
       where: { id },
     })
+
+    // Revalidate frontend karriere pages
+    revalidateFrontend(existing.website as 'bs_plus' | 'ipower', { tag: 'karriere' })
 
     return NextResponse.json({ success: true })
   } catch (error) {

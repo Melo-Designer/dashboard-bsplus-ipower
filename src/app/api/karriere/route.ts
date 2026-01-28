@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { Website, JobStatus } from '@/generated/prisma'
 import { z } from 'zod'
 
@@ -117,6 +118,9 @@ export async function POST(request: NextRequest) {
         applicationDeadline: validated.applicationDeadline ? new Date(validated.applicationDeadline) : null,
       },
     })
+
+    // Revalidate frontend karriere pages
+    revalidateFrontend(website as 'bs_plus' | 'ipower', { tag: 'karriere' })
 
     return NextResponse.json({
       ...job,
