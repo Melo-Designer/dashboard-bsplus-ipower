@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useWebsite } from '@/components/dashboard/WebsiteSelector'
 import { Button } from '@/components/ui/Button'
 import {
@@ -39,6 +39,11 @@ interface ContactMessage {
 
 type FilterType = 'all' | 'unread' | 'archived'
 
+// Email validation helper
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 export default function NachrichtenPage() {
   const { website, isLoaded, getDisplayName } = useWebsite()
   const [messages, setMessages] = useState<ContactMessage[]>([])
@@ -47,6 +52,13 @@ export default function NachrichtenPage() {
   const [filter, setFilter] = useState<FilterType>('all')
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+
+  // Email notification settings
+  const [notificationEmails, setNotificationEmails] = useState<string[]>([])
+  const [emailInput, setEmailInput] = useState('')
+  const [isSavingEmails, setIsSavingEmails] = useState(false)
+  const [showEmailSettings, setShowEmailSettings] = useState(false)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   const fetchMessages = async () => {
     if (!isLoaded) return
@@ -63,8 +75,78 @@ export default function NachrichtenPage() {
     }
   }
 
+  const fetchNotificationEmails = async () => {
+    if (!isLoaded) return
+    try {
+      const res = await fetch(`/api/settings?website=${website}`)
+      const data = await res.json()
+      const emailsStr = data.settings?.contact_notification_emails || ''
+      if (emailsStr) {
+        setNotificationEmails(emailsStr.split(',').map((e: string) => e.trim()).filter(Boolean))
+      } else {
+        setNotificationEmails([])
+      }
+    } catch {
+      // Silently fail - not critical
+    }
+  }
+
+  const saveNotificationEmails = async (emails: string[]) => {
+    setIsSavingEmails(true)
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          website,
+          settings: {
+            contact_notification_emails: emails.join(','),
+          },
+        }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success('E-Mail-Empfänger gespeichert')
+    } catch {
+      toast.error('Fehler beim Speichern')
+    } finally {
+      setIsSavingEmails(false)
+    }
+  }
+
+  const addEmail = () => {
+    const email = emailInput.trim().toLowerCase()
+    if (!email) return
+    if (!isValidEmail(email)) {
+      toast.error('Ungültige E-Mail-Adresse')
+      return
+    }
+    if (notificationEmails.includes(email)) {
+      toast.error('E-Mail bereits hinzugefügt')
+      return
+    }
+    const newEmails = [...notificationEmails, email]
+    setNotificationEmails(newEmails)
+    setEmailInput('')
+    saveNotificationEmails(newEmails)
+    emailInputRef.current?.focus()
+  }
+
+  const removeEmail = (emailToRemove: string) => {
+    const newEmails = notificationEmails.filter((e) => e !== emailToRemove)
+    setNotificationEmails(newEmails)
+    saveNotificationEmails(newEmails)
+  }
+
+  const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addEmail()
+    }
+  }
+
   useEffect(() => {
     fetchMessages()
+    fetchNotificationEmails()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [website, isLoaded, filter])
 
@@ -182,7 +264,87 @@ export default function NachrichtenPage() {
             Kontaktanfragen für {getDisplayName()}
           </p>
         </div>
+        <Button
+          variant="secondary"
+          onClick={() => setShowEmailSettings(!showEmailSettings)}
+          className="flex items-center gap-2"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          E-Mail-Empfänger
+        </Button>
       </div>
+
+      {/* Email Settings Panel */}
+      {showEmailSettings && (
+        <div className="rounded-xl bg-white p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <svg className="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <h2 className="text-lg font-semibold text-text-color">E-Mail-Empfänger für Kontaktanfragen</h2>
+          </div>
+          <p className="text-sm text-text-color/60 mb-4">
+            Diese E-Mail-Adressen erhalten Benachrichtigungen, wenn jemand das Kontaktformular ausfüllt.
+          </p>
+
+          {/* Email Pills */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {notificationEmails.map((email) => (
+              <span
+                key={email}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary text-sm font-medium"
+              >
+                {email}
+                <button
+                  onClick={() => removeEmail(email)}
+                  className="hover:bg-secondary/20 rounded-full p-0.5 transition-colors"
+                  disabled={isSavingEmails}
+                  title="Entfernen"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            ))}
+            {notificationEmails.length === 0 && (
+              <span className="text-sm text-text-color/40 italic">
+                Noch keine E-Mail-Empfänger konfiguriert
+              </span>
+            )}
+          </div>
+
+          {/* Add Email Input */}
+          <div className="flex gap-2">
+            <input
+              ref={emailInputRef}
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              onKeyDown={handleEmailKeyDown}
+              placeholder="E-Mail-Adresse eingeben..."
+              className="flex-1 px-4 py-2 rounded-lg bg-light-grey text-text-color placeholder:text-text-color/40 focus:outline-none focus:ring-2 focus:ring-secondary/50"
+              disabled={isSavingEmails}
+            />
+            <Button
+              onClick={addEmail}
+              disabled={!emailInput.trim() || isSavingEmails}
+            >
+              {isSavingEmails ? (
+                <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : (
+                'Hinzufügen'
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Filter Tabs */}
       <div className="flex gap-2">
