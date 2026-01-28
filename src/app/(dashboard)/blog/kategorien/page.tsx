@@ -193,7 +193,7 @@ export default function KategorienPage() {
           <div>
             <h1 className="text-2xl font-bold text-text-color">Kategorien</h1>
             <p className="text-sm text-text-color/60 mt-1">
-              Verwalten Sie die Blog-Kategorien für {getDisplayName()}
+              Verwalten Sie die Journal-Kategorien für {getDisplayName()}
             </p>
           </div>
         </div>

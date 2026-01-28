@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:seed-journal": "tsx prisma/seeds/journal.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

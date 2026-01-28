@@ -215,7 +215,7 @@ export default function EditBlogBeitrag({ params }: { params: Promise<{ id: stri
         <div>
           <h1 className="text-2xl font-bold text-text-color">Beitrag bearbeiten</h1>
           <p className="text-sm text-text-color/60 mt-1">
-            Bearbeiten Sie den Blog-Beitrag für {getDisplayName()}
+            Bearbeiten Sie den Journal-Beitrag für {getDisplayName()}
           </p>
         </div>
       </div>

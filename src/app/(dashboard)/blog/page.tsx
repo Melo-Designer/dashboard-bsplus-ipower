@@ -171,9 +171,9 @@ export default function BlogPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-color">Blog</h1>
+          <h1 className="text-2xl font-bold text-text-color">Journal</h1>
           <p className="text-sm text-text-color/60 mt-1">
-            Verwalten Sie die Blog-Beiträge für {getDisplayName()}
+            Verwalten Sie die Journal-Beiträge für {getDisplayName()}
           </p>
         </div>
         <div className="flex gap-2">

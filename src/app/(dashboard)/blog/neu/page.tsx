@@ -168,7 +168,7 @@ export default function NeuerBlogBeitrag() {
         <div>
           <h1 className="text-2xl font-bold text-text-color">Neuer Beitrag</h1>
           <p className="text-sm text-text-color/60 mt-1">
-            Erstellen Sie einen neuen Blog-Beitrag für {getDisplayName()}
+            Erstellen Sie einen neuen Journal-Beitrag für {getDisplayName()}
           </p>
         </div>
       </div>
