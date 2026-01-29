@@ -8,6 +8,13 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select'
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -215,6 +222,7 @@ export function SectionManagement() {
                 <SortableSectionCard
                   key={section.id}
                   section={section}
+                  allSections={sections}
                   onUpdate={(updates) => handleUpdateSection(section.id, updates)}
                   onDelete={() => handleDelete(section.id)}
                   onToggleActive={() => handleToggleActive(section)}
@@ -239,6 +247,7 @@ export function SectionManagement() {
 
 function SortableSectionCard({
   section,
+  allSections,
   onUpdate,
   onDelete,
   onToggleActive,
@@ -247,6 +256,7 @@ function SortableSectionCard({
   onCloseMediaModal,
 }: {
   section: ParsedHomepageSection
+  allSections: ParsedHomepageSection[]
   onUpdate: (updates: Partial<ParsedHomepageSection>) => void
   onDelete: () => void
   onToggleActive: () => void
@@ -275,7 +285,21 @@ function SortableSectionCard({
     backgroundColor: section.backgroundColor || 'light',
     textColor: section.textColor || 'dark',
     cards: section.cards,
+    // Navbar settings
+    showInNavbar: section.showInNavbar,
+    navbarName: section.navbarName || '',
+    navbarPosition: section.navbarPosition,
   })
+
+  // Calculate used positions (excluding current section)
+  const usedPositions = allSections
+    .filter((s) => s.id !== section.id && s.showInNavbar && s.navbarPosition)
+    .map((s) => s.navbarPosition as number)
+
+  // Count of sections with navbar enabled (excluding current)
+  const navbarEnabledCount = allSections.filter(
+    (s) => s.id !== section.id && s.showInNavbar
+  ).length
 
   const [editingCard, setEditingCard] = useState<{ index: number; card: AccordionCard } | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ type: 'section' | 'card'; index?: number } | null>(null)
@@ -290,6 +314,9 @@ function SortableSectionCard({
       backgroundColor: section.backgroundColor || 'light',
       textColor: section.textColor || 'dark',
       cards: section.cards,
+      showInNavbar: section.showInNavbar,
+      navbarName: section.navbarName || '',
+      navbarPosition: section.navbarPosition,
     })
   }, [section])
 
@@ -510,6 +537,79 @@ function SortableSectionCard({
                       </span>
                     </button>
                   ))}
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Settings */}
+            <div className="pt-4 mt-4 border-t border-text-color/10">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-text-color/50">In Navigation anzeigen</Label>
+                  <Switch
+                    checked={localData.showInNavbar}
+                    onCheckedChange={(checked) => {
+                      if (checked && navbarEnabledCount >= 5) {
+                        toast.error('Maximal 5 Abschnitte können in der Navigation angezeigt werden')
+                        return
+                      }
+                      setLocalData((prev) => ({ ...prev, showInNavbar: checked }))
+                      if (!checked) {
+                        // Clear navbar fields when disabling
+                        onUpdate({ showInNavbar: false, navbarName: null, navbarPosition: null })
+                      } else {
+                        onUpdate({ showInNavbar: true })
+                      }
+                      toast.success(checked ? 'Navigation aktiviert' : 'Navigation deaktiviert')
+                    }}
+                  />
+                </div>
+              </div>
+
+              {localData.showInNavbar && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs text-text-color/50">Name in Navigation</Label>
+                    <Input
+                      value={localData.navbarName}
+                      onChange={(e) => setLocalData((prev) => ({ ...prev, navbarName: e.target.value }))}
+                      onBlur={() => {
+                        if (localData.navbarName !== (section.navbarName || '')) {
+                          onUpdate({ navbarName: localData.navbarName || null })
+                          toast.success('Name aktualisiert')
+                        }
+                      }}
+                      placeholder={section.title}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-text-color/50">Position</Label>
+                    <Select
+                      value={localData.navbarPosition?.toString() || ''}
+                      onValueChange={(v) => {
+                        const position = parseInt(v)
+                        setLocalData((prev) => ({ ...prev, navbarPosition: position }))
+                        onUpdate({ navbarPosition: position })
+                        toast.success('Position aktualisiert')
+                      }}
+                    >
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Position wählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((pos) => (
+                          <SelectItem
+                            key={pos}
+                            value={pos.toString()}
+                            disabled={usedPositions.includes(pos)}
+                          >
+                            {pos}{usedPositions.includes(pos) ? ' (vergeben)' : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               )}
             </div>

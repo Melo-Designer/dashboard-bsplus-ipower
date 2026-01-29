@@ -17,6 +17,10 @@ const pageUpdateSchema = z.object({
   heroTextColor: z.enum(['light', 'dark']).optional().nullable(),
   heroCardColor: z.enum(['primary', 'secondary']).optional().nullable(),
   active: z.boolean().optional(),
+  // Navigation settings (sidebar/burger menu)
+  showInSidebar: z.boolean().optional(),
+  sidebarName: z.string().max(50).optional().nullable(),
+  sidebarPosition: z.number().min(1).optional().nullable(),
 })
 
 // GET - Get single page with sections
@@ -98,9 +102,16 @@ export async function PUT(
       }
     }
 
+    // Clear sidebar fields if disabling sidebar
+    const updateData = { ...validated }
+    if (validated.showInSidebar === false) {
+      updateData.sidebarName = null
+      updateData.sidebarPosition = null
+    }
+
     const page = await prisma.page.update({
       where: { id },
-      data: validated,
+      data: updateData,
     })
 
     return NextResponse.json(page)

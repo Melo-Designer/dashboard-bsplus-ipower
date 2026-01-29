@@ -405,6 +405,10 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     heroTextColor: 'dark',
     heroCardColor: 'primary',
     active: true,
+    // Sidebar navigation settings
+    showInSidebar: false,
+    sidebarName: '',
+    sidebarPosition: null as number | null,
   })
 
   // Section states
@@ -438,6 +442,10 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
         heroTextColor: data.heroTextColor === 'dark' ? 'dark' : 'light',
         heroCardColor: data.heroCardColor === 'secondary' ? 'secondary' : 'primary',
         active: data.active,
+        // Sidebar navigation settings
+        showInSidebar: data.showInSidebar ?? false,
+        sidebarName: data.sidebarName || '',
+        sidebarPosition: data.sidebarPosition ?? null,
       })
 
       // Organize sections by type
@@ -478,6 +486,10 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
           metaTitle: formData.metaTitle || null,
           metaDescription: formData.metaDescription || null,
           active: formData.active,
+          // Sidebar navigation settings
+          showInSidebar: formData.showInSidebar,
+          sidebarName: formData.sidebarName || null,
+          sidebarPosition: formData.sidebarPosition,
         }),
       })
 
@@ -880,6 +892,68 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                     className="mt-1"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Sidebar Navigation */}
+            <div className="pt-4 border-t border-text-color/10">
+              <h3 className="font-medium text-text-color mb-4">Seitenleiste (Burger-Menü)</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white">
+                  <div>
+                    <span className="font-medium text-text-color">In Seitenleiste anzeigen</span>
+                    <p className="text-sm text-text-color/60">
+                      Zeigt diese Seite im Burger-Menü der Website an
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.showInSidebar}
+                    onCheckedChange={(checked) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        showInSidebar: checked,
+                        // Clear fields when disabling
+                        ...(checked ? {} : { sidebarName: '', sidebarPosition: null }),
+                      }))
+                    }}
+                  />
+                </div>
+
+                {formData.showInSidebar && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-xl bg-white">
+                    <div>
+                      <Label htmlFor="sidebarName">Name im Menü</Label>
+                      <Input
+                        id="sidebarName"
+                        value={formData.sidebarName}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, sidebarName: e.target.value }))}
+                        placeholder={formData.title || 'Seitentitel verwenden'}
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-text-color/50 mt-1">
+                        Leer lassen, um den Seitentitel zu verwenden
+                      </p>
+                    </div>
+                    <div>
+                      <Label htmlFor="sidebarPosition">Position</Label>
+                      <Input
+                        id="sidebarPosition"
+                        type="number"
+                        min={1}
+                        value={formData.sidebarPosition ?? ''}
+                        onChange={(e) => setFormData((prev) => ({
+                          ...prev,
+                          sidebarPosition: e.target.value ? parseInt(e.target.value) : null,
+                        }))}
+                        placeholder="z.B. 1"
+                        className="mt-1"
+                      />
+                      <p className="text-xs text-text-color/50 mt-1">
+                        Niedrigere Zahlen werden weiter oben angezeigt
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

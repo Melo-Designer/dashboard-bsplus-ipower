@@ -23,6 +23,10 @@ const updateSchema = z.object({
   cards: z.array(cardSchema).optional(),
   active: z.boolean().optional(),
   sortOrder: z.number().optional(),
+  // Navigation settings
+  showInNavbar: z.boolean().optional(),
+  navbarName: z.string().max(50).optional().nullable(),
+  navbarPosition: z.number().min(1).max(5).optional().nullable(),
 })
 
 // GET
@@ -62,6 +66,52 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
     const validated = updateSchema.parse(body)
+
+    // Get current section to check website and current navbar status
+    const currentSection = await prisma.homepageSection.findUnique({
+      where: { id },
+      select: { website: true, showInNavbar: true, navbarPosition: true },
+    })
+    if (!currentSection) {
+      return NextResponse.json({ error: 'Nicht gefunden' }, { status: 404 })
+    }
+
+    // Validate navbar settings
+    if (validated.showInNavbar === true && !currentSection.showInNavbar) {
+      // Enabling navbar - check max 5
+      const navbarCount = await prisma.homepageSection.count({
+        where: { website: currentSection.website, showInNavbar: true },
+      })
+      if (navbarCount >= 5) {
+        return NextResponse.json(
+          { error: 'Maximal 5 Abschnitte können in der Navigation angezeigt werden' },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Check position uniqueness (if changing position or enabling navbar)
+    if (validated.navbarPosition !== undefined && validated.navbarPosition !== null) {
+      const positionTaken = await prisma.homepageSection.findFirst({
+        where: {
+          website: currentSection.website,
+          navbarPosition: validated.navbarPosition,
+          id: { not: id },
+        },
+      })
+      if (positionTaken) {
+        return NextResponse.json(
+          { error: `Position ${validated.navbarPosition} ist bereits vergeben` },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Clear navbar fields if disabling navbar
+    if (validated.showInNavbar === false) {
+      validated.navbarName = null
+      validated.navbarPosition = null
+    }
 
     const updateData: Record<string, unknown> = { ...validated }
     if (validated.cards !== undefined) {

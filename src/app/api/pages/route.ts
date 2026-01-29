@@ -18,6 +18,10 @@ const pageSchema = z.object({
   heroTextColor: z.enum(['light', 'dark']).optional().nullable(),
   heroCardColor: z.enum(['primary', 'secondary']).optional().nullable(),
   active: z.boolean().optional(),
+  // Navigation settings (sidebar/burger menu)
+  showInSidebar: z.boolean().optional(),
+  sidebarName: z.string().max(50).optional().nullable(),
+  sidebarPosition: z.number().min(1).optional().nullable(),
 })
 
 // GET - List pages
@@ -92,6 +96,10 @@ export async function POST(request: NextRequest) {
         heroTextColor: validated.heroTextColor,
         heroCardColor: validated.heroCardColor,
         active: validated.active ?? true,
+        // Navigation settings
+        showInSidebar: validated.showInSidebar ?? false,
+        sidebarName: validated.sidebarName,
+        sidebarPosition: validated.sidebarPosition,
       },
     })
 

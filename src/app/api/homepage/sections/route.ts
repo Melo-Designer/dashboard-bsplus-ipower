@@ -23,6 +23,10 @@ const sectionSchema = z.object({
   textColor: z.enum(['light', 'dark']).optional().nullable(),
   cards: z.array(cardSchema).optional(),
   active: z.boolean().optional(),
+  // Navigation settings
+  showInNavbar: z.boolean().optional(),
+  navbarName: z.string().max(50).optional().nullable(),
+  navbarPosition: z.number().min(1).max(5).optional().nullable(),
 })
 
 // GET - List sections
@@ -82,6 +86,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Identifier bereits vorhanden' }, { status: 400 })
     }
 
+    // Validate navbar settings
+    if (validated.showInNavbar) {
+      // Check max 5 navbar sections
+      const navbarCount = await prisma.homepageSection.count({
+        where: { website, showInNavbar: true },
+      })
+      if (navbarCount >= 5) {
+        return NextResponse.json(
+          { error: 'Maximal 5 Abschnitte können in der Navigation angezeigt werden' },
+          { status: 400 }
+        )
+      }
+
+      // Check position uniqueness
+      if (validated.navbarPosition) {
+        const positionTaken = await prisma.homepageSection.findFirst({
+          where: { website, navbarPosition: validated.navbarPosition },
+        })
+        if (positionTaken) {
+          return NextResponse.json(
+            { error: `Position ${validated.navbarPosition} ist bereits vergeben` },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
     // Get max sortOrder
     const maxOrder = await prisma.homepageSection.aggregate({
       where: { website },
@@ -101,6 +132,10 @@ export async function POST(request: NextRequest) {
         cards: validated.cards ? JSON.stringify(validated.cards) : null,
         active: validated.active ?? true,
         sortOrder: (maxOrder._max.sortOrder || 0) + 1,
+        // Navigation settings
+        showInNavbar: validated.showInNavbar ?? false,
+        navbarName: validated.navbarName,
+        navbarPosition: validated.navbarPosition,
       },
     })
 

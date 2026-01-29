@@ -155,6 +155,11 @@ model HomepageSection {
   // [{title, content, linkUrl, linkText, btnClass}]
   cards       String?  @db.Text
 
+  // Navigation settings (top navbar)
+  showInNavbar    Boolean  @default(false)
+  navbarName      String?  // Display name in navbar (defaults to title)
+  navbarPosition  Int?     // Position 1-5 in navbar
+
   sortOrder   Int      @default(0)
   active      Boolean  @default(true)
 
@@ -188,6 +193,11 @@ model Page {
   heroButtonLink  String?
   heroTextColor   String?  // 'light' or 'dark'
   heroCardColor   String?  // 'primary' (white) or 'secondary' (accent)
+
+  // Navigation settings (sidebar/burger menu)
+  showInSidebar    Boolean  @default(false)
+  sidebarName      String?  // Display name in sidebar (defaults to title)
+  sidebarPosition  Int?     // Order between fixed items (lower = higher)
 
   active      Boolean  @default(true)
 

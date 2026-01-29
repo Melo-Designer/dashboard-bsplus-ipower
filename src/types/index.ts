@@ -74,6 +74,10 @@ export interface ParsedHomepageSection {
   cards: AccordionCard[]
   sortOrder: number
   active: boolean
+  // Navigation settings (top navbar)
+  showInNavbar: boolean
+  navbarName: string | null
+  navbarPosition: number | null
   createdAt: Date
   updatedAt: Date
 }
