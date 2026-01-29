@@ -55,6 +55,123 @@ const bsPlusSettings: Record<string, string> = {
   contact_cta_title: '',
   contact_cta_description: '',
   contact_cta_image: '',
+
+  // ============================================
+  // KARRIERE PAGE SETTINGS - ARCHIVE (Job Listing)
+  // ============================================
+
+  // Hero section
+  karriere_hero_button_text: 'Stelle finden',
+  karriere_hero_button_link: '#stellen',
+  karriere_section_hero_color: 'primary',
+
+  // Benefits section (3 columns) - OPTIONAL
+  karriere_benefits_active: 'true',
+  karriere_benefit_1_title: 'Gestalte die Zukunft mit uns',
+  karriere_benefit_1_content: 'Werde Teil eines innovativen Teams und entwickle nachhaltige Energielösungen für morgen.',
+  karriere_benefit_2_title: 'Von der Idee zur Umsetzung',
+  karriere_benefit_2_content: 'Bei uns kannst du deine Ideen einbringen und aktiv an spannenden Projekten mitwirken.',
+  karriere_benefit_3_title: 'Gemeinsam Großes bewegen!',
+  karriere_benefit_3_content: 'In einem starken Team arbeiten wir zusammen an nachhaltigen Lösungen für die Energiewende.',
+
+  // Jobs section
+  karriere_jobs_title: 'Offene Stellen',
+
+  // Empty state (when no jobs)
+  karriere_empty_title: 'Aktuell keine offenen Stellen',
+  karriere_empty_description: 'Derzeit haben wir keine offenen Positionen. Schauen Sie bald wieder vorbei oder senden Sie uns eine Initiativbewerbung!',
+  karriere_empty_button_text: 'Initiativbewerbung senden',
+  karriere_empty_button_link: '/kontakt',
+
+  // About section (text + image) - OPTIONAL
+  karriere_about_active: 'true',
+  karriere_about_title: 'Über uns',
+  karriere_about_content: 'BSplus MotorenService GmbH ist Ihr kompetenter Partner für die Wartung, Reparatur und Optimierung von Gasmotoren auf Energieanlagen. Mit jahrelanger Erfahrung bieten wir professionelle Lösungen für BHKW-Betreiber.',
+  karriere_about_button_text: 'Mehr über uns',
+  karriere_about_button_link: '/ueber-uns',
+  karriere_about_image: '',
+  karriere_about_image_alt: 'Unser Team',
+
+  // Archive CTA section (dark) - OPTIONAL
+  karriere_archive_cta_active: 'true',
+  karriere_archive_cta_title: 'Wärmewende 100% erneuerbar',
+  karriere_archive_cta_description: 'Wir begleiten Sie auf dem Weg zu einer nachhaltigen und dezentralen Energieversorgung.',
+  karriere_archive_cta_button1_text: 'Kontakt aufnehmen',
+  karriere_archive_cta_button1_link: '/kontakt',
+  karriere_archive_cta_button2_text: '',
+  karriere_archive_cta_button2_link: '',
+  karriere_archive_cta_image: '',
+
+  // ============================================
+  // KARRIERE PAGE SETTINGS - SINGLE JOB DETAIL
+  // ============================================
+
+  // Section headings
+  karriere_detail_apply_button: 'Jetzt bewerben',
+  karriere_detail_tasks_title: 'Ihre Aufgaben',
+  karriere_detail_profile_title: 'Ihr Profil',
+  karriere_detail_benefits_title: 'Was wir bieten',
+  karriere_detail_overview_title: 'Auf einen Blick',
+
+  // Application form
+  karriere_form_title: 'Jetzt bewerben',
+  karriere_form_submit_button: 'Bewerbung abschicken',
+  karriere_form_success_message: 'Vielen Dank für Ihre Bewerbung! Wir werden uns in Kürze bei Ihnen melden.',
+  karriere_form_error_message: 'Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.',
+
+  // Single CTA section (dark) - OPTIONAL
+  karriere_single_cta_active: 'true',
+  karriere_single_cta_title: 'Interesse geweckt?',
+  karriere_single_cta_description: 'Wir freuen uns auf Ihre Bewerbung und darauf, Sie kennenzulernen!',
+  karriere_single_cta_button1_text: 'Kontakt aufnehmen',
+  karriere_single_cta_button1_link: '/kontakt',
+  karriere_single_cta_button2_text: 'Mehr über uns',
+  karriere_single_cta_button2_link: '/ueber-uns',
+  karriere_single_cta_image: '',
+
+  // ============================================
+  // JOURNAL PAGE SETTINGS - ARCHIVE (Alle Beiträge)
+  // ============================================
+
+  // SectionTextImage - OPTIONAL
+  journal_text_image_active: 'false',
+  journal_text_image_title: 'Über BSplus',
+  journal_text_image_content: 'Erfahren Sie mehr über unsere Expertise im Bereich BHKW Service und Gasmotoren.',
+  journal_text_image_image: '/uploads/2026/01/1769673411-wn4m43ck.webp',
+  journal_text_image_image_alt: 'Über BSplus',
+  journal_text_image_align: 'left',
+  journal_text_image_mode: 'light',
+  journal_text_image_button_text: '',
+  journal_text_image_button_link: '',
+  journal_text_image_button_style: 'secondary',
+
+  // Archive CTA section (dark) - OPTIONAL
+  journal_cta_active: 'false',
+  journal_cta_title: 'Ihr Partner für BHKW Service',
+  journal_cta_content: 'Mit jahrzehntelanger Erfahrung und einem hochqualifizierten Team stehen wir Ihnen bei allen Fragen rund um Gasmotoren und BHKW zur Seite.',
+  journal_cta_image: '',
+  journal_cta_button1_text: 'Kontakt aufnehmen',
+  journal_cta_button1_link: '/kontakt',
+  journal_cta_button1_style: 'primary',
+  journal_cta_button2_text: '',
+  journal_cta_button2_link: '',
+  journal_cta_button2_style: 'secondary',
+
+  // ============================================
+  // JOURNAL PAGE SETTINGS - SINGLE POST (Einzelner Beitrag)
+  // ============================================
+
+  // Single CTA section (dark) - OPTIONAL
+  journal_single_cta_active: 'false',
+  journal_single_cta_title: 'Ihr Partner für BHKW Service',
+  journal_single_cta_content: 'Mit jahrzehntelanger Erfahrung und einem hochqualifizierten Team stehen wir Ihnen bei allen Fragen rund um Gasmotoren und BHKW zur Seite.',
+  journal_single_cta_image: '',
+  journal_single_cta_button1_text: 'Kontakt aufnehmen',
+  journal_single_cta_button1_link: '/kontakt',
+  journal_single_cta_button1_style: 'primary',
+  journal_single_cta_button2_text: '',
+  journal_single_cta_button2_link: '',
+  journal_single_cta_button2_style: 'secondary',
 }
 
 // iPower Settings
@@ -98,6 +215,123 @@ const iPowerSettings: Record<string, string> = {
   contact_cta_title: 'Langfristige Partnerschaft über die Wärmeplanung hinaus',
   contact_cta_description: 'Wir begleiten Sie nicht nur bei der Wärmeplanung, sondern bieten eine umfassende, langfristige Zusammenarbeit. Mit unserer langjährigen Expertise in Projekten im Bereich erneuerbarer Energien entwickeln wir nachhaltige und dezentrale Energielösungen und kümmern uns um den Aufbau der gesamten Netz- und Erzeugungsinfrastruktur. Unsere Erkenntnisse aus der Planung nutzen wir, um Unternehmen und Initiativen bei der Umsetzung der Wärmeplanung in Ihrer Region effektiv zu unterstützen.',
   contact_cta_image: '/img/black.jpg',
+
+  // ============================================
+  // KARRIERE PAGE SETTINGS - ARCHIVE (Job Listing)
+  // ============================================
+
+  // Hero section
+  karriere_hero_button_text: 'Stelle finden',
+  karriere_hero_button_link: '#stellen',
+  karriere_section_hero_color: 'secondary',
+
+  // Benefits section (3 columns) - OPTIONAL
+  karriere_benefits_active: 'true',
+  karriere_benefit_1_title: 'Gestalte die Zukunft mit uns',
+  karriere_benefit_1_content: 'Werde Teil eines innovativen Teams und entwickle nachhaltige Energielösungen für morgen.',
+  karriere_benefit_2_title: 'Von der Idee zur Umsetzung',
+  karriere_benefit_2_content: 'Bei uns kannst du deine Ideen einbringen und aktiv an spannenden Projekten mitwirken.',
+  karriere_benefit_3_title: 'Gemeinsam Großes bewegen!',
+  karriere_benefit_3_content: 'In einem starken Team arbeiten wir zusammen an nachhaltigen Lösungen für die Energiewende.',
+
+  // Jobs section
+  karriere_jobs_title: 'Offene Stellen',
+
+  // Empty state (when no jobs)
+  karriere_empty_title: 'Aktuell keine offenen Stellen',
+  karriere_empty_description: 'Derzeit haben wir keine offenen Positionen. Schauen Sie bald wieder vorbei oder senden Sie uns eine Initiativbewerbung!',
+  karriere_empty_button_text: 'Initiativbewerbung senden',
+  karriere_empty_button_link: '/kontakt',
+
+  // About section (text + image) - OPTIONAL
+  karriere_about_active: 'true',
+  karriere_about_title: 'Über uns',
+  karriere_about_content: 'iPower bietet Planungs- und Ingenieurlösungen in den Bereichen Energie, Wärme, Infrastruktur und Bau an. Mit unserer Expertise unterstützen wir die Energiewende und entwickeln nachhaltige Konzepte.',
+  karriere_about_button_text: 'Mehr über uns',
+  karriere_about_button_link: '/ueber-uns',
+  karriere_about_image: '',
+  karriere_about_image_alt: 'Unser Team',
+
+  // Archive CTA section (dark) - OPTIONAL
+  karriere_archive_cta_active: 'true',
+  karriere_archive_cta_title: 'Wärmewende 100% erneuerbar',
+  karriere_archive_cta_description: 'Wir begleiten Sie auf dem Weg zu einer nachhaltigen und dezentralen Energieversorgung.',
+  karriere_archive_cta_button1_text: 'Kontakt aufnehmen',
+  karriere_archive_cta_button1_link: '/kontakt',
+  karriere_archive_cta_button2_text: '',
+  karriere_archive_cta_button2_link: '',
+  karriere_archive_cta_image: '',
+
+  // ============================================
+  // KARRIERE PAGE SETTINGS - SINGLE JOB DETAIL
+  // ============================================
+
+  // Section headings
+  karriere_detail_apply_button: 'Jetzt bewerben',
+  karriere_detail_tasks_title: 'Ihre Aufgaben',
+  karriere_detail_profile_title: 'Ihr Profil',
+  karriere_detail_benefits_title: 'Was wir bieten',
+  karriere_detail_overview_title: 'Auf einen Blick',
+
+  // Application form
+  karriere_form_title: 'Jetzt bewerben',
+  karriere_form_submit_button: 'Bewerbung abschicken',
+  karriere_form_success_message: 'Vielen Dank für Ihre Bewerbung! Wir werden uns in Kürze bei Ihnen melden.',
+  karriere_form_error_message: 'Leider ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.',
+
+  // Single CTA section (dark) - OPTIONAL
+  karriere_single_cta_active: 'true',
+  karriere_single_cta_title: 'Interesse geweckt?',
+  karriere_single_cta_description: 'Wir freuen uns auf Ihre Bewerbung und darauf, Sie kennenzulernen!',
+  karriere_single_cta_button1_text: 'Kontakt aufnehmen',
+  karriere_single_cta_button1_link: '/kontakt',
+  karriere_single_cta_button2_text: 'Mehr über uns',
+  karriere_single_cta_button2_link: '/ueber-uns',
+  karriere_single_cta_image: '',
+
+  // ============================================
+  // JOURNAL PAGE SETTINGS - ARCHIVE (Alle Beiträge)
+  // ============================================
+
+  // SectionTextImage - OPTIONAL
+  journal_text_image_active: 'true',
+  journal_text_image_title: 'Über iPower',
+  journal_text_image_content: 'Erat sit eget nascetur ultricies sed non vestibulum. Dui quam cursus dignissim in molestie sit amet quisque magna. Ultricies gravida ante faucibus non netus justo amet. Consectetur in justo natoque auctor eget. Pellentesque lectus facilisis pretium eget mauris tempor est nunc. Faucibus vitae ac magna blandit.',
+  journal_text_image_image: '/uploads/2026/01/1769673146-xxmulnug.jpg',
+  journal_text_image_image_alt: 'Über iPower',
+  journal_text_image_align: 'left',
+  journal_text_image_mode: 'light',
+  journal_text_image_button_text: 'Mehr über iPower',
+  journal_text_image_button_link: '/ueber-uns',
+  journal_text_image_button_style: 'secondary',
+
+  // Archive CTA section (dark) - OPTIONAL
+  journal_cta_active: 'true',
+  journal_cta_title: 'Wärmewende 100% erneuerbar',
+  journal_cta_content: 'Erneuerbare Wärmenetze unterscheiden sich von herkömmlichen Nah- und Fernwärmenetzen, weil sie auf fossile Brennstoffe verzichten. Wir setzten auf ungenutzte Abwärmepotenziale, vernetzen Sektoren und nutzen grüne Energie.',
+  journal_cta_image: '/uploads/2026/01/1769673146-y6yxs079.jpg',
+  journal_cta_button1_text: 'Termin vereinbaren',
+  journal_cta_button1_link: '/kontakt',
+  journal_cta_button1_style: 'primary',
+  journal_cta_button2_text: 'Angebot holen',
+  journal_cta_button2_link: '/kontakt',
+  journal_cta_button2_style: 'secondary',
+
+  // ============================================
+  // JOURNAL PAGE SETTINGS - SINGLE POST (Einzelner Beitrag)
+  // ============================================
+
+  // Single CTA section (dark) - OPTIONAL
+  journal_single_cta_active: 'true',
+  journal_single_cta_title: 'Wärmewende 100% erneuerbar',
+  journal_single_cta_content: 'Erneuerbare Wärmenetze unterscheiden sich von herkömmlichen Nah- und Fernwärmenetzen, weil sie auf fossile Brennstoffe verzichten. Wir setzten auf ungenutzte Abwärmepotenziale, vernetzen Sektoren und nutzen grüne Energie.',
+  journal_single_cta_image: '/uploads/2026/01/1769673146-y6yxs079.jpg',
+  journal_single_cta_button1_text: 'Termin vereinbaren',
+  journal_single_cta_button1_link: '/kontakt',
+  journal_single_cta_button1_style: 'primary',
+  journal_single_cta_button2_text: 'Angebot holen',
+  journal_single_cta_button2_link: '/kontakt',
+  journal_single_cta_button2_style: 'secondary',
 }
 
 async function seedSettings() {

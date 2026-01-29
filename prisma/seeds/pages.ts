@@ -265,6 +265,60 @@ export async function seedPages() {
   })
   console.log('  ✓ Created PageHeader: iPower Kontakt')
 
+  // BS Plus Journal PageHeader
+  await prisma.pageHeader.upsert({
+    where: {
+      website_pageSlug: {
+        website: 'bs_plus' as Website,
+        pageSlug: 'journal',
+      },
+    },
+    update: {
+      title: 'Journal',
+      description: 'Neuigkeiten und Einblicke aus der Welt der BHKW und Gasmotoren',
+      backgroundImage: '/uploads/2026/01/1769673411-woyb79zh.webp',
+      overlayColor: 'rgba(0, 0, 0, 0.4)',
+      textColor: 'white',
+    },
+    create: {
+      website: 'bs_plus' as Website,
+      pageSlug: 'journal',
+      title: 'Journal',
+      description: 'Neuigkeiten und Einblicke aus der Welt der BHKW und Gasmotoren',
+      backgroundImage: '/uploads/2026/01/1769673411-woyb79zh.webp',
+      overlayColor: 'rgba(0, 0, 0, 0.4)',
+      textColor: 'white',
+    },
+  })
+  console.log('  ✓ Created PageHeader: BS Plus Journal')
+
+  // iPower Journal PageHeader
+  await prisma.pageHeader.upsert({
+    where: {
+      website_pageSlug: {
+        website: 'ipower' as Website,
+        pageSlug: 'journal',
+      },
+    },
+    update: {
+      title: 'Journal',
+      description: 'Neuigkeiten und Einblicke aus der Welt der erneuerbaren Energien',
+      backgroundImage: '/uploads/2026/01/1769673132-4racdfx6.jpg',
+      overlayColor: 'rgba(0, 0, 0, 0.4)',
+      textColor: 'white',
+    },
+    create: {
+      website: 'ipower' as Website,
+      pageSlug: 'journal',
+      title: 'Journal',
+      description: 'Neuigkeiten und Einblicke aus der Welt der erneuerbaren Energien',
+      backgroundImage: '/uploads/2026/01/1769673132-4racdfx6.jpg',
+      overlayColor: 'rgba(0, 0, 0, 0.4)',
+      textColor: 'white',
+    },
+  })
+  console.log('  ✓ Created PageHeader: iPower Journal')
+
   console.log('Pages seeded successfully!')
 }
 
