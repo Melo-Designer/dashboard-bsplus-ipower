@@ -93,7 +93,7 @@ export async function PUT(request: NextRequest) {
     await Promise.all(updates)
 
     // Trigger revalidation for affected pages based on setting keys
-    revalidateForSettings(website as 'bs_plus' | 'ipower', Object.keys(settings))
+    await revalidateForSettings(website as 'bs_plus' | 'ipower', Object.keys(settings))
 
     return NextResponse.json({
       success: true,
