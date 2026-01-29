@@ -82,7 +82,7 @@ export default function JournalSeitePage() {
     description: null,
     backgroundImage: null,
     overlayColor: null,
-    textColor: 'light',
+    textColor: 'dark',
     cardColor: 'primary',
   })
   const [heroMediaModalOpen, setHeroMediaModalOpen] = useState(false)

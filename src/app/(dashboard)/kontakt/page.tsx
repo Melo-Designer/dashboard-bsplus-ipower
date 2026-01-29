@@ -56,7 +56,7 @@ export default function ContactPage() {
     description: null,
     backgroundImage: null,
     overlayColor: null,
-    textColor: 'light',
+    textColor: 'dark',
     cardColor: 'primary',
   })
   const [heroMediaModalOpen, setHeroMediaModalOpen] = useState(false)

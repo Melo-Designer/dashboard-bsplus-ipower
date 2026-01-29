@@ -402,7 +402,7 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     heroImage: '',
     heroButtonText: '',
     heroButtonLink: '',
-    heroTextColor: 'light',
+    heroTextColor: 'dark',
     heroCardColor: 'primary',
     active: true,
   })
