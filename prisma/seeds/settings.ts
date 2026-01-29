@@ -60,10 +60,9 @@ const bsPlusSettings: Record<string, string> = {
   // KARRIERE PAGE SETTINGS - ARCHIVE (Job Listing)
   // ============================================
 
-  // Hero section
+  // Hero button
   karriere_hero_button_text: 'Stelle finden',
   karriere_hero_button_link: '#stellen',
-  karriere_section_hero_color: 'primary',
 
   // Benefits section (3 columns) - OPTIONAL
   karriere_benefits_active: 'true',
@@ -220,10 +219,9 @@ const iPowerSettings: Record<string, string> = {
   // KARRIERE PAGE SETTINGS - ARCHIVE (Job Listing)
   // ============================================
 
-  // Hero section
+  // Hero button
   karriere_hero_button_text: 'Stelle finden',
   karriere_hero_button_link: '#stellen',
-  karriere_section_hero_color: 'secondary',
 
   // Benefits section (3 columns) - OPTIONAL
   karriere_benefits_active: 'true',

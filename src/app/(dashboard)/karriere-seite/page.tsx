@@ -14,7 +14,7 @@ import { MediaSelectorModal } from '@/components/dashboard/media/MediaSelectorMo
 import { TripleSectionEditor } from '@/components/dashboard/pages/section-editors/TripleSectionEditor'
 import { toast } from 'sonner'
 import Image from 'next/image'
-import { getImageUrl } from '@/lib/utils'
+import { getImageUrl, cn } from '@/lib/utils'
 import {
   Select,
   SelectContent,
@@ -31,13 +31,13 @@ interface PageHeader {
   backgroundImage: string | null
   overlayColor: string | null
   textColor: string | null
+  cardColor: string | null  // 'primary' (white) or 'secondary' (accent)
 }
 
 interface KarriereSettings {
   // Archive page - Hero button
   karriere_hero_button_text: string
   karriere_hero_button_link: string
-  karriere_section_hero_color: string
   // Archive page - Benefits (SectionTriple) - OPTIONAL
   karriere_benefits_active: string
   karriere_benefit_1_title: string
@@ -95,7 +95,6 @@ interface KarriereSettings {
 const defaultSettings: KarriereSettings = {
   karriere_hero_button_text: '',
   karriere_hero_button_link: '',
-  karriere_section_hero_color: 'primary',
   karriere_benefits_active: 'true',
   karriere_benefit_1_title: '',
   karriere_benefit_1_content: '',
@@ -196,6 +195,7 @@ export default function KarriereSettingsPage() {
     backgroundImage: null,
     overlayColor: null,
     textColor: 'light',
+    cardColor: 'primary',
   })
   const [heroMediaModalOpen, setHeroMediaModalOpen] = useState(false)
 
@@ -236,6 +236,7 @@ export default function KarriereSettingsPage() {
               backgroundImage: headerData.backgroundImage,
               overlayColor: headerData.overlayColor,
               textColor: headerData.textColor === 'dark' ? 'dark' : 'light',
+              cardColor: headerData.cardColor === 'secondary' ? 'secondary' : 'primary',
             })
           }
         }
@@ -248,7 +249,6 @@ export default function KarriereSettingsPage() {
           setSettings({
             karriere_hero_button_text: s.karriere_hero_button_text || '',
             karriere_hero_button_link: s.karriere_hero_button_link || '',
-            karriere_section_hero_color: s.karriere_section_hero_color || 'primary',
             karriere_benefits_active: s.karriere_benefits_active ?? 'true',
             karriere_benefit_1_title: s.karriere_benefit_1_title || '',
             karriere_benefit_1_content: s.karriere_benefit_1_content || '',
@@ -334,6 +334,11 @@ export default function KarriereSettingsPage() {
         ? header.textColor
         : 'light'
 
+      // Ensure cardColor is a valid enum value or null
+      const cardColorValue = header.cardColor === 'primary' || header.cardColor === 'secondary'
+        ? header.cardColor
+        : null
+
       // Save header
       const headerRes = await fetch('/api/headers/karriere', {
         method: 'PUT',
@@ -345,6 +350,7 @@ export default function KarriereSettingsPage() {
           backgroundImage: header.backgroundImage || null,
           overlayColor: header.overlayColor || null,
           textColor: textColorValue,
+          cardColor: cardColorValue,
         }),
       })
 
@@ -357,7 +363,6 @@ export default function KarriereSettingsPage() {
       await saveSettings({
         karriere_hero_button_text: settings.karriere_hero_button_text,
         karriere_hero_button_link: settings.karriere_hero_button_link,
-        karriere_section_hero_color: settings.karriere_section_hero_color,
       })
 
       toast.success('Hero-Bereich gespeichert')
@@ -523,7 +528,7 @@ export default function KarriereSettingsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-wrap items-center gap-6">
                   <div>
                     <Label className="text-xs text-text-color/50">Textfarbe</Label>
                     <Select
@@ -533,7 +538,7 @@ export default function KarriereSettingsPage() {
                         setHeroHasChanges(true)
                       }}
                     >
-                      <SelectTrigger className="mt-1">
+                      <SelectTrigger className="mt-1 w-48">
                         <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
@@ -542,23 +547,40 @@ export default function KarriereSettingsPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label className="text-xs text-text-color/50">Akzentfarbe</Label>
-                    <Select
-                      value={settings.karriere_section_hero_color || 'primary'}
-                      onValueChange={(value) => {
-                        setSettings((prev) => ({ ...prev, karriere_section_hero_color: value }))
-                        setHeroHasChanges(true)
-                      }}
-                    >
-                      <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Auswählen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="primary">Primär (Rot)</SelectItem>
-                        <SelectItem value="secondary">Sekundär (Blau)</SelectItem>
-                      </SelectContent>
-                    </Select>
+
+                  {/* Card Color Selector */}
+                  <div className="flex items-center gap-3">
+                    <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHeader((prev) => ({ ...prev, cardColor: 'primary' }))
+                          setHeroHasChanges(true)
+                        }}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          header.cardColor === 'primary' || !header.cardColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Weiß"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHeader((prev) => ({ ...prev, cardColor: 'secondary' }))
+                          setHeroHasChanges(true)
+                        }}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                          header.cardColor === 'secondary'
+                            ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Sekundär"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
