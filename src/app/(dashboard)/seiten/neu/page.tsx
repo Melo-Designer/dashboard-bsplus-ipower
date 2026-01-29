@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/Label'
 import { MediaSelectorModal } from '@/components/dashboard/media/MediaSelectorModal'
 import { toast } from 'sonner'
 import Image from 'next/image'
-import { getImageUrl } from '@/lib/utils'
+import { getImageUrl, cn } from '@/lib/utils'
 
 export default function NeueSeite() {
   const router = useRouter()
@@ -30,6 +30,8 @@ export default function NeueSeite() {
     heroImage: '',
     heroButtonText: '',
     heroButtonLink: '',
+    heroTextColor: 'dark' as 'light' | 'dark',
+    heroCardColor: 'primary' as 'primary' | 'secondary',
   })
 
   // Auto-generate slug from title
@@ -255,6 +257,66 @@ export default function NeueSeite() {
                     placeholder="z.B. /kontakt"
                     className="mt-1"
                   />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6">
+                {/* Text Color Selector */}
+                <div className="flex items-center gap-3">
+                  <Label className="text-xs text-text-color/50">Textfarbe</Label>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, heroTextColor: 'light' }))}
+                      className={cn(
+                        'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                        formData.heroTextColor === 'light'
+                          ? 'border-secondary scale-110'
+                          : 'border-text-color/20 hover:border-text-color/40'
+                      )}
+                      title="Hell (weiß)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, heroTextColor: 'dark' }))}
+                      className={cn(
+                        'w-6 h-6 rounded-full bg-text-color border-2 transition-all',
+                        formData.heroTextColor === 'dark'
+                          ? 'border-secondary scale-110'
+                          : 'border-transparent hover:scale-105'
+                      )}
+                      title="Dunkel (schwarz)"
+                    />
+                  </div>
+                </div>
+
+                {/* Card Color Selector */}
+                <div className="flex items-center gap-3">
+                  <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, heroCardColor: 'primary' }))}
+                      className={cn(
+                        'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                        formData.heroCardColor === 'primary'
+                          ? 'border-secondary scale-110'
+                          : 'border-text-color/20 hover:border-text-color/40'
+                      )}
+                      title="Weiß"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, heroCardColor: 'secondary' }))}
+                      className={cn(
+                        'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                        formData.heroCardColor === 'secondary'
+                          ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                          : 'border-transparent hover:scale-105'
+                      )}
+                      title="Sekundär"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
