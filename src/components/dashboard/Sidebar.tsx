@@ -41,6 +41,7 @@ const navItems: NavItem[] = [
       { label: 'Unterseiten', href: '/seiten', icon: FileText },
       { label: 'Karriere', href: '/karriere-seite', icon: Briefcase },
       { label: 'Kontakt', href: '/kontakt', icon: MessageSquare },
+      { label: 'Journal-Seite', href: '/journal-seite', icon: Newspaper },
     ],
   },
   { label: 'Bewerbungen', href: '/karriere/bewerbungen', icon: Users },
@@ -195,14 +196,16 @@ export function Sidebar() {
 
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
+          // Helper to check if path is active (exact match or starts with href/)
+          const isPathActive = (href: string | undefined) => {
+            if (!href || href === '/') return pathname === href
+            return pathname === href || pathname.startsWith(href + '/')
+          }
+
           // Item with children (expandable group)
           if (item.children) {
             const isExpanded = expandedGroups.includes(item.label)
-            const hasActiveChild = item.children.some(
-              (child) =>
-                pathname === child.href ||
-                (child.href !== '/' && child.href && pathname.startsWith(child.href))
-            )
+            const hasActiveChild = item.children.some((child) => isPathActive(child.href))
 
             return (
               <div key={item.label}>
@@ -232,9 +235,7 @@ export function Sidebar() {
                 {isExpanded && !isCollapsed && (
                   <div className="ml-4 mt-1 space-y-1">
                     {item.children.map((child) => {
-                      const isChildActive =
-                        pathname === child.href ||
-                        (child.href !== '/' && child.href && pathname.startsWith(child.href))
+                      const isChildActive = isPathActive(child.href)
 
                       return (
                         <Link
@@ -259,9 +260,7 @@ export function Sidebar() {
           }
 
           // Regular nav item
-          const isActive =
-            pathname === item.href ||
-            (item.href !== '/' && item.href && pathname.startsWith(item.href))
+          const isActive = isPathActive(item.href)
 
           return (
             <Link
