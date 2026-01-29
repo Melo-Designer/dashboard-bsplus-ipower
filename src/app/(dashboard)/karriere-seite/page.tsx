@@ -149,6 +149,7 @@ function settingsToTripleSection(settings: KarriereSettings): ParsedPageSection 
     pageId: '',
     type: 'triple',
     title: null,
+    subtitle: null,
     content: null,
     imageUrl: null,
     imageAlt: null,
@@ -159,10 +160,15 @@ function settingsToTripleSection(settings: KarriereSettings): ParsedPageSection 
       { title: settings.karriere_benefit_3_title, content: settings.karriere_benefit_3_content },
     ],
     buttons: [],
+    cards: [],
     stats: [],
     backgroundImage: null,
+    backgroundColor: null,
+    textColor: null,
     sortOrder: 0,
     active: settings.karriere_benefits_active === 'true',
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
 }
 
