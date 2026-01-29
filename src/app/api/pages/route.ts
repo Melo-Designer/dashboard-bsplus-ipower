@@ -15,6 +15,8 @@ const pageSchema = z.object({
   heroImage: z.string().optional().nullable(),
   heroButtonText: z.string().optional().nullable(),
   heroButtonLink: z.string().optional().nullable(),
+  heroTextColor: z.enum(['light', 'dark']).optional().nullable(),
+  heroCardColor: z.enum(['primary', 'secondary']).optional().nullable(),
   active: z.boolean().optional(),
 })
 
@@ -87,6 +89,8 @@ export async function POST(request: NextRequest) {
         heroImage: validated.heroImage,
         heroButtonText: validated.heroButtonText,
         heroButtonLink: validated.heroButtonLink,
+        heroTextColor: validated.heroTextColor,
+        heroCardColor: validated.heroCardColor,
         active: validated.active ?? true,
       },
     })
