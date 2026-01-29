@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select'
 import { Switch } from '@/components/ui/Switch'
+import { cn } from '@/lib/utils'
 
 interface PageHeader {
   id?: string
@@ -28,6 +29,7 @@ interface PageHeader {
   backgroundImage: string | null
   overlayColor: string | null
   textColor: string | null
+  cardColor: string | null  // 'primary' (white) or 'secondary' (accent)
 }
 
 interface JournalSettings {
@@ -56,6 +58,7 @@ interface JournalSettings {
   journal_cta_button2_style: string
 
   // ===== SINGLE POST PAGE (Einzelner Beitrag) =====
+  journal_single_card_color: string  // 'primary' (white) or 'secondary' (accent)
   journal_single_cta_active: boolean
   journal_single_cta_title: string
   journal_single_cta_content: string
@@ -80,6 +83,7 @@ export default function JournalSeitePage() {
     backgroundImage: null,
     overlayColor: null,
     textColor: 'light',
+    cardColor: 'primary',
   })
   const [heroMediaModalOpen, setHeroMediaModalOpen] = useState(false)
 
@@ -107,6 +111,8 @@ export default function JournalSeitePage() {
     journal_cta_button2_text: '',
     journal_cta_button2_link: '',
     journal_cta_button2_style: 'secondary',
+    // Single Post - Card Color
+    journal_single_card_color: 'primary',
     // Single Post - CTA
     journal_single_cta_active: true,
     journal_single_cta_title: '',
@@ -139,7 +145,8 @@ export default function JournalSeitePage() {
               description: headerData.description,
               backgroundImage: headerData.backgroundImage,
               overlayColor: headerData.overlayColor,
-              textColor: headerData.textColor || 'light',
+              textColor: headerData.textColor === 'dark' ? 'dark' : 'light',
+              cardColor: headerData.cardColor === 'secondary' ? 'secondary' : 'primary',
             })
           }
         }
@@ -172,6 +179,8 @@ export default function JournalSeitePage() {
             journal_cta_button2_text: s.journal_cta_button2_text || '',
             journal_cta_button2_link: s.journal_cta_button2_link || '',
             journal_cta_button2_style: s.journal_cta_button2_style || 'secondary',
+            // Single Post - Card Color
+            journal_single_card_color: s.journal_single_card_color || 'primary',
             // Single Post - CTA
             journal_single_cta_active: s.journal_single_cta_active !== 'false',
             journal_single_cta_title: s.journal_single_cta_title || '',
@@ -203,6 +212,16 @@ export default function JournalSeitePage() {
 
     setIsSaving(true)
     try {
+      // Ensure textColor is a valid enum value or null
+      const textColorValue = header.textColor === 'light' || header.textColor === 'dark'
+        ? header.textColor
+        : null
+
+      // Ensure cardColor is a valid enum value or null
+      const cardColorValue = header.cardColor === 'primary' || header.cardColor === 'secondary'
+        ? header.cardColor
+        : null
+
       const res = await fetch('/api/headers/journal', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -212,14 +231,18 @@ export default function JournalSeitePage() {
           description: header.description || null,
           backgroundImage: header.backgroundImage || null,
           overlayColor: header.overlayColor || null,
-          textColor: header.textColor || null,
+          textColor: textColorValue,
+          cardColor: cardColorValue,
         }),
       })
 
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Fehler beim Speichern')
+      }
       toast.success('Hero-Bereich gespeichert')
-    } catch {
-      toast.error('Fehler beim Speichern')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Fehler beim Speichern')
     } finally {
       setIsSaving(false)
     }
@@ -256,6 +279,8 @@ export default function JournalSeitePage() {
             journal_cta_button2_text: settings.journal_cta_button2_text,
             journal_cta_button2_link: settings.journal_cta_button2_link,
             journal_cta_button2_style: settings.journal_cta_button2_style,
+            // Single Post - Card Color
+            journal_single_card_color: settings.journal_single_card_color,
             // Single Post - CTA
             journal_single_cta_active: settings.journal_single_cta_active ? 'true' : 'false',
             journal_single_cta_title: settings.journal_single_cta_title,
@@ -371,20 +396,51 @@ export default function JournalSeitePage() {
                   />
                 </div>
 
-                <div>
-                  <Label className="text-xs text-text-color/50">Textfarbe</Label>
-                  <Select
-                    value={header.textColor || 'light'}
-                    onValueChange={(value) => setHeader((prev) => ({ ...prev, textColor: value }))}
-                  >
-                    <SelectTrigger className="mt-1 w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Hell (weiß)</SelectItem>
-                      <SelectItem value="dark">Dunkel (schwarz)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center gap-6">
+                  <div>
+                    <Label className="text-xs text-text-color/50">Textfarbe</Label>
+                    <Select
+                      value={header.textColor || 'light'}
+                      onValueChange={(value) => setHeader((prev) => ({ ...prev, textColor: value }))}
+                    >
+                      <SelectTrigger className="mt-1 w-48">
+                        <SelectValue placeholder="Auswählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Hell (weiß)</SelectItem>
+                        <SelectItem value="dark">Dunkel (schwarz)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Card Color Selector */}
+                  <div className="flex items-center gap-3">
+                    <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, cardColor: 'primary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          header.cardColor === 'primary' || !header.cardColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Weiß"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, cardColor: 'secondary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                          header.cardColor === 'secondary'
+                            ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Sekundär"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {header.backgroundImage && (
@@ -481,7 +537,7 @@ export default function JournalSeitePage() {
                       onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_text_image_align: value }))}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="left">Bild links</SelectItem>
@@ -496,7 +552,7 @@ export default function JournalSeitePage() {
                       onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_text_image_mode: value }))}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="light">Hell</SelectItem>
@@ -532,7 +588,7 @@ export default function JournalSeitePage() {
                       onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_text_image_button_style: value }))}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="primary">Primär</SelectItem>
@@ -643,7 +699,7 @@ export default function JournalSeitePage() {
                         onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_cta_button1_style: value }))}
                       >
                         <SelectTrigger className="mt-1">
-                          <SelectValue />
+                          <SelectValue placeholder="Auswählen" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primär</SelectItem>
@@ -682,7 +738,7 @@ export default function JournalSeitePage() {
                         onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_cta_button2_style: value }))}
                       >
                         <SelectTrigger className="mt-1">
-                          <SelectValue />
+                          <SelectValue placeholder="Auswählen" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primär</SelectItem>
@@ -709,6 +765,48 @@ export default function JournalSeitePage() {
 
         {/* ===== SINGLE POST TAB (Einzelner Beitrag) ===== */}
         <TabsContent value="single" className="mt-6 space-y-6">
+          {/* Single Post Hero Card Color */}
+          <div className="rounded-xl bg-light-grey overflow-hidden shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 bg-white/50">
+              <h2 className="font-bold text-text-color">Hero-Bereich Einstellungen</h2>
+              <Button variant="secondary" onClick={handleSaveSettings} disabled={isSaving}>
+                {isSaving ? 'Speichern...' : 'Speichern'}
+              </Button>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center gap-3">
+                <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                <div className="flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setSettings((prev) => ({ ...prev, journal_single_card_color: 'primary' }))}
+                    className={cn(
+                      'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                      settings.journal_single_card_color === 'primary' || !settings.journal_single_card_color
+                        ? 'border-secondary scale-110'
+                        : 'border-text-color/20 hover:border-text-color/40'
+                    )}
+                    title="Weiß"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSettings((prev) => ({ ...prev, journal_single_card_color: 'secondary' }))}
+                    className={cn(
+                      'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                      settings.journal_single_card_color === 'secondary'
+                        ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                        : 'border-transparent hover:scale-105'
+                    )}
+                    title="Sekundär"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-text-color/50 mt-2">
+                Die Kartenfarbe wird auf allen einzelnen Beiträgen im Hero-Bereich verwendet.
+              </p>
+            </div>
+          </div>
+
           {/* Single Post CTA Section */}
           <div className="rounded-xl bg-light-grey overflow-hidden shadow-sm">
             <div className="flex items-center justify-between px-4 py-3 bg-white/50">
@@ -797,7 +895,7 @@ export default function JournalSeitePage() {
                         onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_single_cta_button1_style: value }))}
                       >
                         <SelectTrigger className="mt-1">
-                          <SelectValue />
+                          <SelectValue placeholder="Auswählen" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primär</SelectItem>
@@ -836,7 +934,7 @@ export default function JournalSeitePage() {
                         onValueChange={(value) => setSettings((prev) => ({ ...prev, journal_single_cta_button2_style: value }))}
                       >
                         <SelectTrigger className="mt-1">
-                          <SelectValue />
+                          <SelectValue placeholder="Auswählen" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="primary">Primär</SelectItem>

@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/Select'
 import { Switch } from '@/components/ui/Switch'
+import { cn } from '@/lib/utils'
 
 interface PageHeader {
   id?: string
@@ -28,6 +29,7 @@ interface PageHeader {
   backgroundImage: string | null
   overlayColor: string | null
   textColor: string | null
+  cardColor: string | null  // 'primary' (white) or 'secondary' (accent)
 }
 
 interface ContactSettings {
@@ -55,6 +57,7 @@ export default function ContactPage() {
     backgroundImage: null,
     overlayColor: null,
     textColor: 'light',
+    cardColor: 'primary',
   })
   const [heroMediaModalOpen, setHeroMediaModalOpen] = useState(false)
 
@@ -89,7 +92,8 @@ export default function ContactPage() {
               description: headerData.description,
               backgroundImage: headerData.backgroundImage,
               overlayColor: headerData.overlayColor,
-              textColor: headerData.textColor || 'light',
+              textColor: headerData.textColor === 'dark' ? 'dark' : 'light',
+              cardColor: headerData.cardColor === 'secondary' ? 'secondary' : 'primary',
             })
           }
         }
@@ -130,6 +134,16 @@ export default function ContactPage() {
 
     setIsSaving(true)
     try {
+      // Ensure textColor is a valid enum value or null
+      const textColorValue = header.textColor === 'light' || header.textColor === 'dark'
+        ? header.textColor
+        : null
+
+      // Ensure cardColor is a valid enum value or null
+      const cardColorValue = header.cardColor === 'primary' || header.cardColor === 'secondary'
+        ? header.cardColor
+        : null
+
       const res = await fetch('/api/headers/kontakt', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -139,14 +153,18 @@ export default function ContactPage() {
           description: header.description || null,
           backgroundImage: header.backgroundImage || null,
           overlayColor: header.overlayColor || null,
-          textColor: header.textColor || null,
+          textColor: textColorValue,
+          cardColor: cardColorValue,
         }),
       })
 
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Fehler beim Speichern')
+      }
       toast.success('Hero-Bereich gespeichert')
-    } catch {
-      toast.error('Fehler beim Speichern')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Fehler beim Speichern')
     } finally {
       setIsSaving(false)
     }
@@ -282,22 +300,53 @@ export default function ContactPage() {
                   />
                 </div>
 
-                <div>
-                  <Label className="text-xs text-text-color/50">Textfarbe</Label>
-                  <Select
-                    value={header.textColor || 'light'}
-                    onValueChange={(value) =>
-                      setHeader((prev) => ({ ...prev, textColor: value }))
-                    }
-                  >
-                    <SelectTrigger className="mt-1 w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">Hell (weiß)</SelectItem>
-                      <SelectItem value="dark">Dunkel (schwarz)</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center gap-6">
+                  <div>
+                    <Label className="text-xs text-text-color/50">Textfarbe</Label>
+                    <Select
+                      value={header.textColor || 'light'}
+                      onValueChange={(value) =>
+                        setHeader((prev) => ({ ...prev, textColor: value }))
+                      }
+                    >
+                      <SelectTrigger className="mt-1 w-48">
+                        <SelectValue placeholder="Hell (weiß)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="light">Hell (weiß)</SelectItem>
+                        <SelectItem value="dark">Dunkel (schwarz)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Card Color Selector */}
+                  <div className="flex items-center gap-3">
+                    <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, cardColor: 'primary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          header.cardColor === 'primary' || !header.cardColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Weiß"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, cardColor: 'secondary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                          header.cardColor === 'secondary'
+                            ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Sekundär"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {header.backgroundImage && (
@@ -502,7 +551,7 @@ export default function ContactPage() {
                       }
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="primary">Primär</SelectItem>

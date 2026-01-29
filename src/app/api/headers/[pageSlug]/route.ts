@@ -11,6 +11,7 @@ const headerUpdateSchema = z.object({
   backgroundImage: z.string().optional().nullable(),
   overlayColor: z.string().optional().nullable(),
   textColor: z.enum(['light', 'dark']).optional().nullable(),
+  cardColor: z.enum(['primary', 'secondary']).optional().nullable(),
 })
 
 // GET - Get single header
@@ -81,6 +82,7 @@ export async function PUT(
         backgroundImage: validated.backgroundImage,
         overlayColor: validated.overlayColor,
         textColor: validated.textColor,
+        cardColor: validated.cardColor,
       },
       create: {
         website: validated.website,
@@ -90,6 +92,7 @@ export async function PUT(
         backgroundImage: validated.backgroundImage,
         overlayColor: validated.overlayColor,
         textColor: validated.textColor,
+        cardColor: validated.cardColor,
       },
     })
 
@@ -99,9 +102,12 @@ export async function PUT(
     return NextResponse.json(header)
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Zod validation error:', error.issues)
       return NextResponse.json({ error: error.issues[0].message }, { status: 400 })
     }
-    console.error('Update header error:', error)
-    return NextResponse.json({ error: 'Fehler beim Speichern' }, { status: 500 })
+    console.error('Update header error:', error instanceof Error ? error.message : error)
+    return NextResponse.json({
+      error: error instanceof Error ? error.message : 'Fehler beim Speichern'
+    }, { status: 500 })
   }
 }

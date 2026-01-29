@@ -398,6 +398,7 @@ model PageHeader {
   backgroundImage String?
   overlayColor    String?
   textColor       String?
+  cardColor       String?  // 'primary' (white) or 'secondary' (accent)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

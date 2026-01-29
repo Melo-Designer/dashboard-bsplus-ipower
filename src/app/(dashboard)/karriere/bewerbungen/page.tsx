@@ -280,7 +280,7 @@ function BewerbungenContent() {
                     onValueChange={(value) => handleStatusChange(application.id, value)}
                   >
                     <SelectTrigger className="w-40">
-                      <SelectValue />
+                      <SelectValue placeholder="Auswählen" />
                     </SelectTrigger>
                     <SelectContent>
                       {APPLICATION_STATUSES.map((status) => (

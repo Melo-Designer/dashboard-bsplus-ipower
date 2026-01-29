@@ -235,7 +235,7 @@ export default function KarriereSettingsPage() {
               description: headerData.description,
               backgroundImage: headerData.backgroundImage,
               overlayColor: headerData.overlayColor,
-              textColor: headerData.textColor || 'light',
+              textColor: headerData.textColor === 'dark' ? 'dark' : 'light',
             })
           }
         }
@@ -329,6 +329,11 @@ export default function KarriereSettingsPage() {
 
     setIsSaving(true)
     try {
+      // Ensure textColor is a valid enum value
+      const textColorValue = header.textColor === 'light' || header.textColor === 'dark'
+        ? header.textColor
+        : 'light'
+
       // Save header
       const headerRes = await fetch('/api/headers/karriere', {
         method: 'PUT',
@@ -339,11 +344,14 @@ export default function KarriereSettingsPage() {
           description: header.description || null,
           backgroundImage: header.backgroundImage || null,
           overlayColor: header.overlayColor || null,
-          textColor: header.textColor || null,
+          textColor: textColorValue,
         }),
       })
 
-      if (!headerRes.ok) throw new Error()
+      if (!headerRes.ok) {
+        const errorData = await headerRes.json()
+        throw new Error(errorData.error || 'Fehler beim Speichern')
+      }
 
       // Save hero button settings
       await saveSettings({
@@ -354,8 +362,8 @@ export default function KarriereSettingsPage() {
 
       toast.success('Hero-Bereich gespeichert')
       setHeroHasChanges(false)
-    } catch {
-      toast.error('Fehler beim Speichern')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Fehler beim Speichern')
     } finally {
       setIsSaving(false)
     }
@@ -526,7 +534,7 @@ export default function KarriereSettingsPage() {
                       }}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="light">Hell (weiß)</SelectItem>
@@ -544,7 +552,7 @@ export default function KarriereSettingsPage() {
                       }}
                     >
                       <SelectTrigger className="mt-1">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="primary">Primär (Rot)</SelectItem>

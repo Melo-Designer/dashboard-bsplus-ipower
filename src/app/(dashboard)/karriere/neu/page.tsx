@@ -391,7 +391,7 @@ export default function NeueStelle() {
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, status: value as 'draft' | 'published' | 'archived' }))}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue />
+                  <SelectValue placeholder="Auswählen" />
                 </SelectTrigger>
                 <SelectContent>
                   {JOB_STATUSES.map((status) => (

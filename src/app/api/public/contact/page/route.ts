@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
         backgroundImage: true,
         overlayColor: true,
         textColor: true,
+        cardColor: true,
       },
     })
 

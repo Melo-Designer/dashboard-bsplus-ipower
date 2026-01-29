@@ -275,7 +275,7 @@ function SortableTextImageCard({
                 onValueChange={(v) => setLocalData((prev) => ({ ...prev, imageAlign: v as 'left' | 'right' }))}
               >
                 <SelectTrigger className="mt-1">
-                  <SelectValue />
+                  <SelectValue placeholder="Auswählen" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="left">Bild links</SelectItem>
@@ -322,7 +322,7 @@ function SortableTextImageCard({
                       onValueChange={(v) => handleButtonChange(index, 'btnClass', v)}
                     >
                       <SelectTrigger className="w-24">
-                        <SelectValue />
+                        <SelectValue placeholder="Auswählen" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="primary">Primär</SelectItem>

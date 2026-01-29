@@ -28,6 +28,8 @@ const JOURNAL_PAGE_SETTINGS = [
   'journal_cta_button2_link',
   'journal_cta_button2_style',
   // ===== SINGLE POST PAGE (Einzelner Beitrag) =====
+  // Hero Card Color for Single Post
+  'journal_single_card_color',
   // SectionBlack (CTA) settings - Single Post
   'journal_single_cta_active',
   'journal_single_cta_title',
@@ -71,6 +73,7 @@ export async function GET(request: NextRequest) {
         backgroundImage: true,
         overlayColor: true,
         textColor: true,
+        cardColor: true,
       },
     })
 

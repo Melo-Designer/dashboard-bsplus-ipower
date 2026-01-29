@@ -422,7 +422,7 @@ export default function BewerbungDetailPage({ params }: { params: Promise<{ id: 
             <h2 className="font-medium text-text-color">Status</h2>
             <Select value={application.status} onValueChange={handleStatusChange}>
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Auswählen" />
               </SelectTrigger>
               <SelectContent>
                 {APPLICATION_STATUSES.map((status) => (
