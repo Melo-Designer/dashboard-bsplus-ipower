@@ -149,6 +149,10 @@ export interface ParsedPage {
   heroTextColor: string | null
   heroCardColor: string | null
   active: boolean
+  // Sidebar navigation settings
+  showInSidebar: boolean
+  sidebarName: string | null
+  sidebarPosition: number | null
   sections: ParsedPageSection[]
   createdAt: Date
   updatedAt: Date
