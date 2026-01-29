@@ -17,6 +17,19 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3002',
 ]
 
+// Auth pages (public for unauthenticated users)
+const AUTH_ROUTES = [
+  '/anmelden',
+  '/passwort-vergessen',
+  '/passwort-zuruecksetzen',
+]
+
+// Public API prefixes (no auth required)
+const PUBLIC_API_PREFIXES = [
+  '/api/auth',
+  '/api/public',
+]
+
 function handleCors(request: NextRequest, response: NextResponse): NextResponse {
   const origin = request.headers.get('origin')
   const isAllowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
@@ -55,32 +68,39 @@ export async function proxy(request: NextRequest) {
     return handleCors(request, response)
   }
 
+  // Check authentication
   const session = await auth()
-  const isLoggedIn = !!session
+  const isAuthenticated = !!session
 
-  const isAuthPage = pathname.startsWith('/anmelden') || pathname.startsWith('/passwort')
-  const isDashboard = pathname === '/' || pathname.startsWith('/dashboard')
-  const isApi = pathname.startsWith('/api')
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'))
+  const isPublicApi = PUBLIC_API_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  const isApiRoute = pathname.startsWith('/api/')
 
-  // Allow public API routes (e.g., content fetch)
-  if (isApi) {
-    // Only protect dashboard API routes
-    if (pathname.startsWith('/api/dashboard') && !isLoggedIn) {
-      return NextResponse.json(
-        { error: 'Nicht autorisiert' },
-        { status: 401 }
-      )
-    }
+  // Allow public API routes (auth and public)
+  if (isPublicApi) {
     return NextResponse.next()
   }
 
-  // Redirect logged-in users away from auth pages
-  if (isAuthPage && isLoggedIn) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Protected API routes - return 401 if not authenticated
+  if (isApiRoute && !isAuthenticated) {
+    return NextResponse.json(
+      { error: 'Nicht autorisiert' },
+      { status: 401 }
+    )
   }
 
-  // Redirect unauthenticated users to login
-  if (isDashboard && !isLoggedIn) {
+  // Redirect authenticated users away from auth pages
+  if (isAuthRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // Allow auth pages for unauthenticated users
+  if (isAuthRoute) {
+    return NextResponse.next()
+  }
+
+  // Redirect unauthenticated users to login (for all dashboard pages)
+  if (!isAuthenticated) {
     const callbackUrl = encodeURIComponent(pathname)
     return NextResponse.redirect(
       new URL(`/anmelden?callbackUrl=${callbackUrl}`, request.url)
@@ -92,12 +112,13 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
-    '/dashboard/:path*',
-    '/anmelden',
-    '/passwort-vergessen',
-    '/passwort-zuruecksetzen',
-    '/api/dashboard/:path*',
-    '/api/public/:path*',
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files (images, etc.)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 }
