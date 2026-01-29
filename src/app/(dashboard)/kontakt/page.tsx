@@ -301,22 +301,33 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-center gap-6">
-                  <div>
+                  {/* Text Color Selector */}
+                  <div className="flex items-center gap-3">
                     <Label className="text-xs text-text-color/50">Textfarbe</Label>
-                    <Select
-                      value={header.textColor || 'light'}
-                      onValueChange={(value) =>
-                        setHeader((prev) => ({ ...prev, textColor: value }))
-                      }
-                    >
-                      <SelectTrigger className="mt-1 w-48">
-                        <SelectValue placeholder="Hell (weiß)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="light">Hell (weiß)</SelectItem>
-                        <SelectItem value="dark">Dunkel (schwarz)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, textColor: 'light' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          header.textColor === 'light' || !header.textColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Hell (weiß)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setHeader((prev) => ({ ...prev, textColor: 'dark' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-text-color border-2 transition-all',
+                          header.textColor === 'dark'
+                            ? 'border-secondary scale-110'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Dunkel (schwarz)"
+                      />
+                    </div>
                   </div>
 
                   {/* Card Color Selector */}

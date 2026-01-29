@@ -26,7 +26,7 @@ import {
 import { MediaSelectorModal } from '@/components/dashboard/media/MediaSelectorModal'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { toast } from 'sonner'
-import { getImageUrl } from '@/lib/utils'
+import { getImageUrl, cn } from '@/lib/utils'
 import {
   DndContext,
   closestCenter,
@@ -402,6 +402,8 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
     heroImage: '',
     heroButtonText: '',
     heroButtonLink: '',
+    heroTextColor: 'light',
+    heroCardColor: 'primary',
     active: true,
   })
 
@@ -433,6 +435,8 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
         heroImage: data.heroImage || '',
         heroButtonText: data.heroButtonText || '',
         heroButtonLink: data.heroButtonLink || '',
+        heroTextColor: data.heroTextColor === 'dark' ? 'dark' : 'light',
+        heroCardColor: data.heroCardColor === 'secondary' ? 'secondary' : 'primary',
         active: data.active,
       })
 
@@ -494,6 +498,16 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
   const saveHero = async () => {
     setSaving('hero')
     try {
+      // Ensure textColor is a valid enum value
+      const textColorValue = formData.heroTextColor === 'light' || formData.heroTextColor === 'dark'
+        ? formData.heroTextColor
+        : 'light'
+
+      // Ensure cardColor is a valid enum value
+      const cardColorValue = formData.heroCardColor === 'primary' || formData.heroCardColor === 'secondary'
+        ? formData.heroCardColor
+        : 'primary'
+
       const res = await fetch(`/api/pages/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -504,6 +518,8 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
           heroImage: formData.heroImage || null,
           heroButtonText: formData.heroButtonText || null,
           heroButtonLink: formData.heroButtonLink || null,
+          heroTextColor: textColorValue,
+          heroCardColor: cardColorValue,
         }),
       })
 
@@ -958,6 +974,66 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                       placeholder="z.B. /kontakt"
                       className="mt-1"
                     />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6">
+                  {/* Text Color Selector */}
+                  <div className="flex items-center gap-3">
+                    <Label className="text-xs text-text-color/50">Textfarbe</Label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, heroTextColor: 'light' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          formData.heroTextColor === 'light' || !formData.heroTextColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Hell (weiß)"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, heroTextColor: 'dark' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-text-color border-2 transition-all',
+                          formData.heroTextColor === 'dark'
+                            ? 'border-secondary scale-110'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Dunkel (schwarz)"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Card Color Selector */}
+                  <div className="flex items-center gap-3">
+                    <Label className="text-xs text-text-color/50">Kartenfarbe</Label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, heroCardColor: 'primary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-white border-2 transition-all',
+                          formData.heroCardColor === 'primary' || !formData.heroCardColor
+                            ? 'border-secondary scale-110'
+                            : 'border-text-color/20 hover:border-text-color/40'
+                        )}
+                        title="Weiß"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData((prev) => ({ ...prev, heroCardColor: 'secondary' }))}
+                        className={cn(
+                          'w-6 h-6 rounded-full bg-secondary border-2 transition-all',
+                          formData.heroCardColor === 'secondary'
+                            ? 'border-secondary scale-110 ring-2 ring-secondary/30'
+                            : 'border-transparent hover:scale-105'
+                        )}
+                        title="Sekundär"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

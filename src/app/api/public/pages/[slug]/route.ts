@@ -71,6 +71,8 @@ export async function GET(
       heroImage: page.heroImage,
       heroButtonText: page.heroButtonText,
       heroButtonLink: page.heroButtonLink,
+      heroTextColor: page.heroTextColor,
+      heroCardColor: page.heroCardColor,
       sections: parsedSections,
     }
 

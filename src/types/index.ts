@@ -142,6 +142,8 @@ export interface ParsedPage {
   heroImage: string | null
   heroButtonText: string | null
   heroButtonLink: string | null
+  heroTextColor: string | null
+  heroCardColor: string | null
   active: boolean
   sections: ParsedPageSection[]
   createdAt: Date

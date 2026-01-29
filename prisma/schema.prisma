@@ -186,6 +186,8 @@ model Page {
   heroImage       String?
   heroButtonText  String?
   heroButtonLink  String?
+  heroTextColor   String?  // 'light' or 'dark'
+  heroCardColor   String?  // 'primary' (white) or 'secondary' (accent)
 
   active      Boolean  @default(true)
 

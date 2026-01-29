@@ -14,6 +14,8 @@ const pageUpdateSchema = z.object({
   heroImage: z.string().optional().nullable(),
   heroButtonText: z.string().optional().nullable(),
   heroButtonLink: z.string().optional().nullable(),
+  heroTextColor: z.enum(['light', 'dark']).optional().nullable(),
+  heroCardColor: z.enum(['primary', 'secondary']).optional().nullable(),
   active: z.boolean().optional(),
 })
 
