@@ -49,6 +49,8 @@ export const SETTING_GROUPS: SettingGroup[] = [
       { key: 'social_linkedin', label: 'LinkedIn', type: 'url', placeholder: 'https://linkedin.com/...' },
       { key: 'social_youtube', label: 'YouTube', type: 'url', placeholder: 'https://youtube.com/...' },
       { key: 'social_xing', label: 'Xing', type: 'url', placeholder: 'https://xing.com/...' },
+      { key: 'social_whatsapp', label: 'WhatsApp', type: 'url', placeholder: 'https://api.whatsapp.com/send?phone=49...' },
+      { key: 'social_google_maps', label: 'Google Maps', type: 'url', placeholder: 'https://maps.google.com/...' },
     ],
   },
   {

@@ -19,6 +19,8 @@ const PUBLIC_SETTING_KEYS = [
   'social_linkedin',
   'social_youtube',
   'social_xing',
+  'social_whatsapp',
+  'social_google_maps',
   'google_maps_embed',
   'opening_hours',
   // Contact page content
