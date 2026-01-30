@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
+import { RichTextEditor } from '@/components/dashboard/RichTextEditor'
 import { Switch } from '@/components/ui/Switch'
 import { Badge } from '@/components/ui/Badge'
 import {
@@ -247,13 +248,12 @@ function SortableTextImageCard({
 
           {/* Content */}
           <div>
-            <Label className="text-xs text-text-color/50">Inhalt (HTML erlaubt)</Label>
-            <Textarea
-              value={localData.content}
-              onChange={(e) => setLocalData((prev) => ({ ...prev, content: e.target.value }))}
-              rows={4}
+            <Label className="text-xs text-text-color/50">Inhalt</Label>
+            <RichTextEditor
+              content={localData.content}
+              onChange={(value) => setLocalData((prev) => ({ ...prev, content: value }))}
+              placeholder="Beschreibungstext eingeben..."
               className="mt-1"
-              placeholder="Beschreibungstext... (HTML wie <br />, <a href> erlaubt)"
             />
           </div>
 
@@ -1151,7 +1151,11 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                           <div key={index} className="p-3 rounded-lg bg-light-grey">
                             <p className="font-medium text-text-color">{item.title || `Spalte ${index + 1}`}</p>
                             {item.content && (
-                              <p className="text-sm text-text-color/60 mt-1 line-clamp-3">{item.content}</p>
+                              // Content from trusted dashboard CMS
+                              <div
+                                className="text-sm text-text-color/60 mt-1 line-clamp-3 [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_strong]:font-bold [&_em]:italic [&_u]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-secondary [&_blockquote]:pl-2 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
+                                dangerouslySetInnerHTML={{ __html: item.content }}
+                              />
                             )}
                           </div>
                         ))}
@@ -1268,9 +1272,11 @@ export default function SeiteBearbeiten({ params }: { params: Promise<{ id: stri
                     <div className="p-4 rounded-lg bg-gray-900 text-white">
                       <p className="font-medium">{blackCtaSection.title || 'Kein Titel'}</p>
                       {blackCtaSection.content && (
-                        <p className="text-sm text-white/70 mt-1 line-clamp-2">
-                          {blackCtaSection.content.replace(/<[^>]*>/g, '')}
-                        </p>
+                        // Content from trusted dashboard CMS
+                        <div
+                          className="text-sm text-white/70 mt-1 line-clamp-2 [&_h2]:font-bold [&_h3]:font-bold [&_h4]:font-bold [&_strong]:font-bold [&_em]:italic [&_u]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-white/50 [&_blockquote]:pl-2 [&_blockquote]:italic [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4"
+                          dangerouslySetInnerHTML={{ __html: blackCtaSection.content }}
+                        />
                       )}
                       {blackCtaSection.buttons && blackCtaSection.buttons.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">

@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
+import { RichTextEditor } from '@/components/dashboard/RichTextEditor'
 import {
   Select,
   SelectContent,
@@ -82,13 +82,11 @@ export function TextImageSectionEditor({ section, onSave, onCancel }: TextImageS
 
       {/* Content */}
       <div>
-        <Label htmlFor="content">Inhalt (HTML erlaubt)</Label>
-        <Textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Beschreibungstext... (HTML wie <br />, <a href> erlaubt)"
-          rows={6}
+        <Label htmlFor="content">Inhalt</Label>
+        <RichTextEditor
+          content={content}
+          onChange={setContent}
+          placeholder="Beschreibungstext eingeben..."
           className="mt-1"
         />
       </div>

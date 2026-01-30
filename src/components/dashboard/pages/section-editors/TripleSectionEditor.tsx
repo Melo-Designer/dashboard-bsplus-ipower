@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
+import { RichTextEditor } from '@/components/dashboard/RichTextEditor'
 import {
   Select,
   SelectContent,
@@ -96,12 +96,10 @@ export function TripleSectionEditor({ section, onSave, onCancel }: TripleSection
               </div>
               <div>
                 <Label htmlFor={`item-${index}-content`} className="text-xs">Inhalt</Label>
-                <Textarea
-                  id={`item-${index}-content`}
-                  value={item.content}
-                  onChange={(e) => handleItemChange(index, 'content', e.target.value)}
-                  placeholder="Spalteninhalt..."
-                  rows={4}
+                <RichTextEditor
+                  content={item.content}
+                  onChange={(value) => handleItemChange(index, 'content', value)}
+                  placeholder="Spalteninhalt eingeben..."
                   className="mt-1"
                 />
               </div>

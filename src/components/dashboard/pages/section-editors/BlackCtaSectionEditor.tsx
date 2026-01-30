@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Textarea } from '@/components/ui/Textarea'
 import { Label } from '@/components/ui/Label'
+import { RichTextEditor } from '@/components/dashboard/RichTextEditor'
 import {
   Select,
   SelectContent,
@@ -78,12 +78,10 @@ export function BlackCtaSectionEditor({ section, onSave, onCancel }: BlackCtaSec
       {/* Content */}
       <div>
         <Label htmlFor="content">Inhalt</Label>
-        <Textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+        <RichTextEditor
+          content={content}
+          onChange={setContent}
           placeholder="Beschreibungstext für den CTA-Bereich..."
-          rows={4}
           className="mt-1"
         />
       </div>
