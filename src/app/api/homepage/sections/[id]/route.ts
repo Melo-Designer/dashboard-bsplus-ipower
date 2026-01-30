@@ -125,6 +125,8 @@ export async function PUT(
 
     // Trigger frontend cache revalidation (non-blocking)
     revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'sections' })
+    // Also revalidate navigation when navbar settings might have changed
+    revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'navigation' })
 
     return NextResponse.json({
       ...section,
@@ -163,6 +165,7 @@ export async function DELETE(
     // Trigger frontend cache revalidation (non-blocking)
     if (section) {
       revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'sections' })
+      revalidateFrontend(section.website as 'bs_plus' | 'ipower', { tag: 'navigation' })
     }
 
     return NextResponse.json({ success: true })

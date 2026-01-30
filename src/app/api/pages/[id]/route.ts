@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { revalidateFrontend } from '@/lib/revalidate'
 import { z } from 'zod'
 
 const pageUpdateSchema = z.object({
@@ -114,6 +115,11 @@ export async function PUT(
       data: updateData,
     })
 
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(page.website as 'bs_plus' | 'ipower', { tag: 'pages' })
+    // Also revalidate navigation when sidebar settings might have changed
+    revalidateFrontend(page.website as 'bs_plus' | 'ipower', { tag: 'navigation' })
+
     return NextResponse.json(page)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -149,6 +155,10 @@ export async function DELETE(
     await prisma.page.delete({
       where: { id },
     })
+
+    // Trigger frontend cache revalidation (non-blocking)
+    revalidateFrontend(existing.website as 'bs_plus' | 'ipower', { tag: 'pages' })
+    revalidateFrontend(existing.website as 'bs_plus' | 'ipower', { tag: 'navigation' })
 
     return NextResponse.json({ success: true })
   } catch (error) {
