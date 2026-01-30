@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { SectionType } from '@/generated/prisma'
+import { SectionType, Website } from '@/generated/prisma'
 import { z } from 'zod'
+import { revalidateFrontend } from '@/lib/revalidate'
 
 const tripleItemSchema = z.object({
   title: z.string(),
@@ -149,6 +150,9 @@ export async function POST(
         sortOrder: (maxOrder._max.sortOrder || 0) + 1,
       },
     })
+
+    // Trigger frontend revalidation
+    await revalidateFrontend(page.website as 'bs_plus' | 'ipower', { path: `/${page.slug}` })
 
     return NextResponse.json({
       ...section,

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { SectionType } from '@/generated/prisma'
 import { z } from 'zod'
+import { revalidateFrontend } from '@/lib/revalidate'
 
 const tripleItemSchema = z.object({
   title: z.string(),
@@ -61,9 +62,10 @@ export async function PUT(
     const { id: pageId, sectionId } = await params
     const body = await request.json()
 
-    // Check if section exists and belongs to page
+    // Check if section exists and belongs to page, get page for revalidation
     const existing = await prisma.pageSection.findFirst({
       where: { id: sectionId, pageId },
+      include: { page: true },
     })
     if (!existing) {
       return NextResponse.json({ error: 'Abschnitt nicht gefunden' }, { status: 404 })
@@ -97,6 +99,9 @@ export async function PUT(
       data: updateData,
     })
 
+    // Trigger frontend revalidation
+    await revalidateFrontend(existing.page.website as 'bs_plus' | 'ipower', { path: `/${existing.page.slug}` })
+
     return NextResponse.json({
       ...section,
       items: section.items ? JSON.parse(section.items) : [],
@@ -126,9 +131,10 @@ export async function DELETE(
 
     const { id: pageId, sectionId } = await params
 
-    // Check if section exists and belongs to page
+    // Check if section exists and belongs to page, get page for revalidation
     const existing = await prisma.pageSection.findFirst({
       where: { id: sectionId, pageId },
+      include: { page: true },
     })
     if (!existing) {
       return NextResponse.json({ error: 'Abschnitt nicht gefunden' }, { status: 404 })
@@ -137,6 +143,9 @@ export async function DELETE(
     await prisma.pageSection.delete({
       where: { id: sectionId },
     })
+
+    // Trigger frontend revalidation
+    await revalidateFrontend(existing.page.website as 'bs_plus' | 'ipower', { path: `/${existing.page.slug}` })
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { revalidateFrontend } from '@/lib/revalidate'
 
 const reorderSchema = z.object({
   sectionIds: z.array(z.string()).min(1),
@@ -40,6 +41,9 @@ export async function PUT(
         })
       )
     )
+
+    // Trigger frontend revalidation
+    await revalidateFrontend(page.website as 'bs_plus' | 'ipower', { path: `/${page.slug}` })
 
     return NextResponse.json({ success: true })
   } catch (error) {
